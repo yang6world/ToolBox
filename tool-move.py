@@ -1,67 +1,81 @@
 import os
-import fuzzywuzzy
 import shutil
- 
+from fuzzywuzzy import fuzz
+
 dir_path = r'/root'
 end_path = r'/root/data'
-#遍历所有文件
-def get_file_list(dir_path):
-    all = os.listdir(dir_path)
-    for i in all:
-        if i.startswith('.'):
-            all.remove(i)
-    file = []
-    for path in os.listdir(dir_path):
-        if os.path.isfile(os.path.join(dir_path, path)):
-            file.append(path)
-    for i in file:
-        if i.startswith('.'):
-            file.remove(i)
-    folder = []
-    for path in os.listdir(dir_path):
-        if os.path.isdir(os.path.join(dir_path, path)):
-            folder.append(path)
-    for i in folder:
-        if i.startswith('.'):
-            folder.remove(i)
-    return all,file,folder
 
-all,file,folder=get_file_list(dir_path+'/'+'config')
-#文件树比较并进行移动操作
-def compare_file(dir_path,end_path):
-    num=0
-    first_start_all,first_start_file,first_start_folder=get_file_list(dir_path)
-    first_end_all,first_end_file,first_end_folder=get_file_list(end_path)
-    for i in first_start_file:
-        for j in first_end_file:
-            secend_start_all,secend_start_file,secend_start_folder=get_file_list(dir_path+'/'+i)
-            secend_end_all,secend_end_file,secend_end_folder=get_file_list(end_path+'/'+j)
-            if not secend_start_all:
-                print(dir_path+'为空')
-                break
-            if not secend_start_folder:
-                print(dir_path+'为空')
+def get_file_list(dir_path):
+    all_entries = os.listdir(dir_path)
+    all_entries = [entry for entry in all_entries if not entry.startswith('.')]
+    
+    files = [path for path in all_entries if os.path.isfile(os.path.join(dir_path, path))]
+    folders = [path for path in all_entries if os.path.isdir(os.path.join(dir_path, path))]
+    
+    return all_entries, files, folders
+
+def compare_file(dir_path, end_path):
+    num = 0
+    
+    # 获取起始和结束路径的文件列表
+    _, start_files, start_folders = get_file_list(dir_path)
+    _, end_files, end_folders = get_file_list(end_path)
+    
+    for start_file in start_files:
+        for end_file in end_files:
+            # 使用模糊匹配判断文件名相似度是否大于80%
+            if fuzz.ratio(start_file, end_file) > 80:
+                # 构建源文件和目标文件夹路径
+                source_file = os.path.join(dir_path, start_file)
+                destination_folder = os.path.join(end_path, end_file)
                 
-            else:
-                _,_,_=compare_file(dir_path+'/'+i,end_path)
-            if fuzzywuzzy.fuzz.ratio(i,j)>80:
-                #判断first_start_file列表是否为空
-                if not first_start_folder:
-                    print('first_start_file列表为空')
-                    break
-                else:
-                    for k in secend_start_file:
-                        num=num+1
-                        formatted_number = str(num).zfill(2)
-                        _,source_file,_=dir_path+'/'+i+'/'+k
-                        source_file=dir_path+'/'+i
-                        destination_folder=end_path+'/'+j
-                        new_destination_path = os.path.join(destination_folder, )
-                        shutil.move(source_file, new_destination_path)
-            else:
+                # 移动文件
+                shutil.move(source_file, destination_folder)
+                
+                num += 1
+                print(f"Moved: {start_file} to {end_file}")
+                
+                # 解析季数和集数
+                season, episode = parse_season_and_episode(start_file)
+                
+                # 构建新文件名
+                new_filename = f"{end_file}_S{season}_EP{episode}{get_file_extension(start_file)}"
+                
+                # 构建新文件的路径
+                new_file_path = os.path.join(end_path, new_filename)
+                
+                # 重命名文件
+                os.rename(destination_folder, new_file_path)
+                
+                print(f"Renamed: {end_file} to {new_filename}")
+                
+                # 退出内层循环，继续下一个文件
                 break
-print(all)
-print(file)
-print(folder)
-i='/'+'电影'
-print(dir_path+i)
+
+    # 递归处理子文件夹
+    for start_folder in start_folders:
+        # 构建子文件夹的路径
+        sub_dir_path = os.path.join(dir_path, start_folder)
+        sub_end_path = os.path.join(end_path, start_folder)
+        
+        # 递归调用比较函数
+        compare_file(sub_dir_path, sub_end_path)
+
+def parse_season_and_episode(filename):
+    # 假设文件名的格式为 "S01E02"，可以根据实际情况进行调整
+    # 这里只是一个示例
+    season = int(filename[1:3])
+    episode = int(filename[4:6])
+    return season, episode
+
+def get_file_extension(filename):
+    # 获取文件后缀
+    return os.path.splitext(filename)[1]
+
+all_entries, _, _ = get_file_list(os.path.join(dir_path, 'config'))
+
+# 打印文件列表
+print(all_entries)
+
+# 调用比较函数
+compare_file(dir_path, end_path)
