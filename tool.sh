@@ -1,8 +1,9 @@
 #!/bin/bash
-version="1.1.1"
+version="1.1.2"
 if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
+    ipv6=$(curl -s https://ipv6.icanhazip.com/)
 fi
 function update_toolbox(){
     echo "正在更新"
@@ -503,8 +504,8 @@ EOF
 function perview(){
     echo -----------------------------------------------
     echo -e "\033[32m 欢迎使用551工具箱\033[0m  \033[32m 版本：\033[0m \033[44m"$version"\033[0m"
-    echo -e "\033[32m 本机ip：\033[0m \033[44m"$ipv4"\033[0m"
-    echo -e "\033[32m 版本：\033[0m \033[44m"$version"\033[0m"
+    echo -e "\033[32m 本机ipv4：\033[0m \033[44m"$ipv4"\033[0m"
+    echo -e "\033[32m 本机ipv6：\033[0m \033[44m"$ipv6"\033[0m"
     if [ -f "/etc/toolbox/config.yaml" ]; then
         echo -e "\033[32m 你的域名为:$domain\033[0m"
         echo -e "\033[32m 你的配置目录为:\033[0m \033[33m/root/config\033[0m"
