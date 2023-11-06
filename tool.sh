@@ -515,7 +515,7 @@ function perview(){
     if [ ! -f "$file" ]; then
         start
     fi
-    new_version=$(curl -s -L toolbox.yserver.top/version)
+    new_version=$(curl -s -L https://toolbox.yserver.top/version)
     #对比版本号检查更新
     if [ "$new_version" != "$version" ]; then
         echo -e "\033[32m 检测到新版本$new_version，是否更新？ \033[0m"
