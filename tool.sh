@@ -139,6 +139,8 @@ cat > /etc/nginx/sites-enabled/wordpress<< EOF
     }
 EOF
 nginx_restart
+mkdir -p /root/config/wordpress/config
+cp /etc/toolbox/php.ini /root/config/wordpress/config/php.ini
 docker-compose -f /etc/toolbox/wordpress.yaml up -d
 ssl_cert
 cat > /etc/nginx/sites-enabled/wordpress<< EOF
@@ -190,7 +192,6 @@ if (isset(\$_SERVER['HTTP_X_FORWARDED_HOST'])) {
 define('WP_HOME','https://$domain/');
 define('WP_SITEURL','https://$domain/');
 EOF
-cp /etc/toolbox/php.ini /root/config/wordpress/config/php.ini
 docker-compose -f /etc/toolbox/wordpress.yaml restart
 }
 #代码服务器
