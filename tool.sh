@@ -29,7 +29,6 @@ function chack_update(){
         fi
     else
         echo -e "\033[32m 当前版本为最新版本 \033[0m"
-        toolbox
     fi
 }
 function update_toolbox(){
