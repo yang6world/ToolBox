@@ -1,10 +1,37 @@
 #!/bin/bash
-version="1.1.1"
+version="1.1.2"
+run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
 if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
     ipv6=$(curl -s https://ipv6.icanhazip.com/)
 fi
+function graph_screen(){
+    echo -----------------------------------------------
+    echo -e "\033[32m 欢迎使用551工具箱\033[0m \033[32m版本：\033[0m\033[44m"$version"\033[0m"
+    echo -e "\033[32m 本机ipv4：\033[0m \033[33m"$ipv4"\033[0m"
+    echo -e "\033[32m 本机ipv6：\033[0m \033[33m"$ipv6"\033[0m"
+    if [ -f "/etc/toolbox/config.yaml" ]; then
+        echo -e "\033[32m 你的域名为:$domain\033[0m"
+        echo -e "\033[32m 你的配置目录为:\033[0m \033[33m/root/config\033[0m"
+    fi
+    echo -e "\033[32m 本机运行时间:\033[0m\033[0m \033[44m"$run_time"\033[0m"
+    echo -----------------------------------------------
+}
+function chack_update(){
+    new_version=$(curl -s -L https://toolbox.yserver.top/version)
+    #对比版本号检查更新
+    if [ "$new_version" != "$version" ]; then
+        echo -e "\033[32m 检测到新版本$new_version，是否更新？ \033[0m"
+        read -p "输入y更新，输入n跳过：" update
+        if [ "$update" = "y" ]; then
+            update_toolbox
+        fi
+    else
+        echo -e "\033[32m 当前版本为最新版本 \033[0m"
+        toolbox
+    fi
+}
 function update_toolbox(){
     echo "正在更新"
     wget https://toolbox.yserver.top/latest/tool.sh -O /etc/toolbox/tool.sh
@@ -501,32 +528,8 @@ EOF
 
 }
 
-function perview(){
-    echo -----------------------------------------------
-    echo -e "\033[32m 欢迎使用551工具箱\033[0m  \033[32m 版本：\033[0m \033[44m"$version"\033[0m"
-    echo -e "\033[32m 本机ipv4：\033[0m \033[44m"$ipv4"\033[0m"
-    echo -e "\033[32m 本机ipv6：\033[0m \033[44m"$ipv6"\033[0m"
-    if [ -f "/etc/toolbox/config.yaml" ]; then
-        echo -e "\033[32m 你的域名为:$domain\033[0m"
-        echo -e "\033[32m 你的配置目录为:\033[0m \033[33m/root/config\033[0m"
-    fi
-    echo ----------------------------------------------- 
-    file="/etc/toolbox/config.yaml"
-    if [ ! -f "$file" ]; then
-        start
-    fi
-    new_version=$(curl -s -L https://toolbox.yserver.top/version)
-    #对比版本号检查更新
-    if [ "$new_version" != "$version" ]; then
-        echo -e "\033[32m 检测到新版本$new_version，是否更新？ \033[0m"
-        read -p "输入y更新，输入n跳过：" update
-        if [ "$update" = "y" ]; then
-            update_toolbox
-        fi
-    fi
-
-    export password=$domain
-    password=$domain
+function install_app(){
+    graph_screen
     echo -e "\033[32m 请选择安装 \033[0m"
     if [ ! -f "/etc/nginx/sites-enabled/wordpress" ]; then
         echo -e "\033[32m 1.安装wordpress \033[0m"
@@ -619,6 +622,64 @@ function perview(){
       echo "谢谢使用！"
       exit 0
       ;;
+    esac
+}
+function perview(){
+    graph_screen
+    file="/etc/toolbox/config.yaml"
+    if [ ! -f "$file" ]; then
+        start
+    fi
+    chack_update
+    export password=$domain
+    password=$domain
+    echo -e "\033[32m 1.安装/卸载应用服务 \033[0m"
+    echo -e "\033[32m 2.管理应用配置文件 \033[0m"
+    echo -e "\033[32m 3.服务器管理 \033[0m"
+    echo -e "\033[32m 4.高级选项 \033[0m"
+    echo -e "\033[32m 5.更新工具箱 \033[0m"
+    echo -e "\033[32m 点击任意键退出 \033[0m"
+    read choice1
+    case "$choice1" in
+    1)
+        install_app
+        ;;
+    2)
+        echo -e
+        ;;
+    3)
+        graph_screen
+        echo -e "\033[32m 1.重启服务器 \033[0m"
+        echo -e "\033[32m 2.重启docker \033[0m"
+        echo -e "\033[32m 3.重启nginx \033[0m"
+        echo -e "\033[32m 点击任意键返回上一级 \033[0m"
+        read choice2
+        case "$choice2" in
+        1)
+            echo -e "\033[32m 重启服务器 \033[0m"
+            reboot
+            ;;
+        2)
+            echo -e "\033[32m 重启docker \033[0m"
+            systemctl restart docker
+            ;;
+        3)
+            echo -e "\033[32m 重启nginx \033[0m"
+            nginx_restart
+            ;;
+        *)
+            perview
+            ;;
+        esac
+        ;;
+    4)
+        echo -e "\033[32m 敬请期待 \033[0m"
+
+        ;;
+    5)
+        echo -e "\033[32m 更新工具箱 \033[0m"
+        update_toolbox
+        ;;
     esac
 }
 perview
