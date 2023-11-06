@@ -618,8 +618,7 @@ function install_app(){
         fi
         ;;
     *)
-      echo "谢谢使用！"
-      exit 0
+      perview
       ;;
     esac
 }
