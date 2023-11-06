@@ -1,5 +1,5 @@
 #!/bin/bash
-version="1.1.2"
+version="1.1.1"
 if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
