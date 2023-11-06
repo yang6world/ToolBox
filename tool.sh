@@ -7,8 +7,8 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
 fi
 function update_toolbox(){
     echo "正在更新"
-    wget https://toolbox.yserver.top/tool.sh -O /etc/toolbox/tool.sh
-    wget https://toolbox.yserver.top/wordpress.yaml -O /etc/toolbox/wordpress.yaml
+    wget https://toolbox.yserver.top/latest/tool.sh -O /etc/toolbox/tool.sh
+    wget https://toolbox.yserver.top/latest/wordpress.yaml -O /etc/toolbox/wordpress.yaml
     chmod +x /etc/toolbox/tool.sh
     echo "更新完成，请重新运行"
     exit 0
@@ -515,7 +515,7 @@ function perview(){
     if [ ! -f "$file" ]; then
         start
     fi
-    new_version=$(curl -s -L toolbox.yserver.top)
+    new_version=$(curl -s -L toolbox.yserver.top/version)
     #对比版本号检查更新
     if [ "$new_version" != "$version" ]; then
         echo -e "\033[32m 检测到新版本$new_version，是否更新？ \033[0m"
