@@ -677,7 +677,7 @@ function perview(){
         ;;
     5)
         echo -e "\033[32m 更新工具箱 \033[0m"
-        update_toolbox
+        chack_update
         ;;
     esac
 }
