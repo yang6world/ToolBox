@@ -1,6 +1,9 @@
 #!/bin/bash
+    ipv4=$(curl -s https://ipv4.icanhazip.com/)
+    ipv6=$(curl -s https://ipv6.icanhazip.com/)
+    run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
     echo -----------------------------------------------
-    echo -e "\033[32m 欢迎使用551工具箱\033[0m \033[32m版本：\033[0m\033[44m"$version"\033[0m"
+    echo -e "\033[32m 欢迎使用551工具箱\033[0m"
     echo -e "\033[32m 本机ipv4：\033[0m \033[33m"$ipv4"\033[0m"
     echo -e "\033[32m 本机ipv6：\033[0m \033[33m"$ipv6"\033[0m"
     echo -e "\033[32m 本机运行时间:\033[0m\033[0m \033[44m"$run_time"\033[0m"
