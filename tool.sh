@@ -5,6 +5,7 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
     ipv6=$(curl -s https://ipv6.icanhazip.com/)
+    docker_api=$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')
 fi
 function graph_screen(){
     echo -----------------------------------------------
@@ -511,19 +512,30 @@ function start(){
         cat <<EOF > /etc/toolbox/config.yaml
 domain: $domain
 vouch: false
+docker_api: true
 EOF
-        chmod +x ./tls.sh
-        source ./tls.sh
-        systemctl stop docker 
-        rm /lib/systemd/system/docker.service
-        cp ./docker.service /lib/systemd/system/docker.service
-        sudo systemctl daemon-reload
-        sudo systemctl restart docker.service
         mkdir -p /etc/toolbox
         cp ./* /etc/toolbox/
         ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
         chmod +x /etc/toolbox/tool.sh
         chmod +x /usr/local/bin/toolbox
+    fi
+    docker_api=$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')
+    #检查docker_api是否开启
+    if [ "$docker_api" = "true" ]; then
+        #是否存在证书
+        if [ ! -f "/etc/toolbox/a-key-xjp.pem" ]; then
+            echo "未检测到证书"
+            chmod +x /etc/toobox/tls.sh
+            source /etc/toobox/tls.sh
+            systemctl stop docker 
+            rm /lib/systemd/system/docker.service
+            cp ./docker.service /lib/systemd/system/docker.service
+            sudo systemctl daemon-reload
+            sudo systemctl restart docker.service
+        else
+            echo "docker_api已开启"
+        fi
     fi
 
 }
