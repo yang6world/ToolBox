@@ -29,9 +29,9 @@
             echo -e "\033[32m 安装成功！\033[0m"
             echo -e "\033[32m 输入\033[0m \033[33m/etc/toolbox/551.sh\033[0m \033[32m即可运行！\033[0m"
             exit 1
-        else
-            echo -e "\033[31m 你已安装\033[0m"
-            echo -e "\033[31m 输入\033[0m \033[33mtoolbox\033[0m \033[31m即可运行！\033[0m"
-            exit 1
         fi
+    else
+        echo -e "\033[31m 你已安装\033[0m"
+        echo -e "\033[31m 输入\033[0m \033[33mtoolbox\033[0m \033[31m即可运行！\033[0m"
+        exit 1
     fi
