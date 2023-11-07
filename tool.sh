@@ -522,6 +522,9 @@ EOF
     fi
     docker_api=$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')
     #检查docker_api是否开启
+    if [! -n "$docker_api" ]; then
+        modify_yaml_key /etc/toolbox/config.yaml docker_api true
+    fi
     if [ "$docker_api" = "true" ]; then
         #是否开启端口2376
         if [ !  -n "$(lsof -i:2376)"  ]; then
@@ -538,6 +541,12 @@ EOF
         fi
     fi
 
+
+}
+
+function chack_config(){
+    #检查配置文件是否完整不完整则加入
+    #检查是否存在domain不存在则加入
 
 }
 
