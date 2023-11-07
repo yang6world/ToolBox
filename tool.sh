@@ -544,11 +544,6 @@ EOF
 
 }
 
-function chack_config(){
-    #检查配置文件是否完整不完整则加入
-    #检查是否存在domain不存在则加入
-
-}
 
 function install_app(){
     graph_screen
@@ -650,6 +645,11 @@ function perview(){
     file="/etc/toolbox/config.yaml"
     if [ ! -f "$file" ]; then
         start
+    fi
+    if [ !  -n "$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')" ]; then
+    cat <<EOF >> /etc/toolbox/config.yaml
+docker_api: true
+EOF
     fi
     chack_update
     export password=$domain
