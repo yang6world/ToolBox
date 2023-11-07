@@ -523,8 +523,8 @@ EOF
     docker_api=$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')
     #检查docker_api是否开启
     if [ "$docker_api" = "true" ]; then
-        #是否存在证书
-        if [ ! -f "/etc/toolbox/a-key-xjp.pem" ]; then
+        #是否开启端口2376
+        if [ !  -n "$(lsof -i:2376)"  ]; then
             echo "未检测到证书"
             chmod +x /etc/toobox/tls.sh
             source /etc/toobox/tls.sh
@@ -537,6 +537,7 @@ EOF
             echo "docker_api已开启"
         fi
     fi
+
 
 }
 
