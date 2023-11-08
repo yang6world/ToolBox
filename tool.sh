@@ -503,10 +503,8 @@ function start(){
         echo "acme.sh安装失败"
         exit 1
     fi
-    #检查是否存在toolbox
-    file="/usr/local/bin/toolbox"
-
-    if [ ! -f "$file" ]; then
+    #检查是否存在配置文件
+    if [ ! -f "/etc/toolbox/config.yaml" ]; then
         export password=$domain
         password=$domain
         cat <<EOF > /etc/toolbox/config.yaml
