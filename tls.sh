@@ -6,9 +6,8 @@
 
 # 以下是配置信息
 # --[BEGIN]------------------------------
-password=$(cat /etc/toolbox/config.yaml | grep domian | awk '{print $2}')
 CODE="xjp"
-PASSWORD=$password
+PASSWORD=$(cat /etc/toolbox/config.yaml | grep domian | awk '{print $2}')
 COUNTRY="CN"
 STATE="BEIJING"
 CITY="BEIJING"

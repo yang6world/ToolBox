@@ -526,11 +526,11 @@ EOF
         #是否开启端口2376
         if [ !  -n "$(lsof -i:2376)"  ]; then
             echo "未检测到证书"
-            chmod +x /etc/toobox/tls.sh
-            source /etc/toobox/tls.sh
+            chmod +x /etc/toolbox/tls.sh
+            source /etc/toolbox/tls.sh
             systemctl stop docker 
             rm /lib/systemd/system/docker.service
-            cp ./docker.service /lib/systemd/system/docker.service
+            cp /etc/toolbox/docker.service /lib/systemd/system/docker.service
             sudo systemctl daemon-reload
             sudo systemctl restart docker.service
         else
