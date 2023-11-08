@@ -525,7 +525,7 @@ EOF
         if [ !  -n "$(lsof -i:2376)"  ]; then
             echo "未检测到证书"
             chmod +x /etc/toolbox/tls.sh
-            source /etc/toolbox/tls.sh
+            bash /etc/toolbox/tls.sh
             systemctl stop docker 
             rm /lib/systemd/system/docker.service
             cp /etc/toolbox/docker.service /lib/systemd/system/docker.service
