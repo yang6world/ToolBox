@@ -1,6 +1,35 @@
 #!/bin/bash
 version="1.1.2"
 run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
+#修改配置
+modify_yaml_key() {
+  local yaml_file="$1"
+  local key_to_modify="$2"
+  local new_value="$3"
+
+  # 检查是否存在要修改的键
+  if [[ -f "$yaml_file" ]]; then
+    yaml_content=$(<"$yaml_file")
+
+    if [[ $yaml_content == *"$key_to_modify:"* ]]; then
+      # 使用正则表达式来查找要修改的键的行
+      key_line=$(echo "$yaml_content" | grep -n "$key_to_modify:" | cut -d: -f1)
+      # 计算缩进级别
+      indent=$(echo "${yaml_content}" | sed -n "${key_line}p" | awk -F"$key_to_modify:" '{print $1}')
+      # 替换键对应的值
+      new_line="${indent}${key_to_modify}: $new_value"
+      updated_yaml_content=$(echo "$yaml_content" | sed "${key_line}s/.*/$new_line/")
+      # 保存更新后的内容回文件
+      echo "$updated_yaml_content" > "$yaml_file"
+
+      echo "配置已更新"
+    else
+      echo "未找到要修改的键: $key_to_modify"
+    fi
+  else
+    echo "YAML 文件不存在: $yaml_file"
+  fi
+}
 if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
@@ -10,11 +39,12 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
     versions=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
     vouch=$(cat /etc/toolbox/config.yaml | grep vouch | awk '{print $2}')
     docker_api_protect=$(cat /etc/toolbox/config.yaml | grep docker_api_protect | awk '{print $2}')
+    #对比配置文件版本号
+    if [ "$version" != "$versions" ]; then
+        modify_yaml_key /etc/toolbox/config.yaml version $version
+    fi
 fi
-#对比配置文件版本号
-if [ "$version" != "$versions" ]; then
-    modify_yaml_key /etc/toolbox/config.yaml version $version
-fi
+
 ##查询本机位置
 # 检查是否请求成功
 response=$(curl -s http://ip-api.com/json/$ipv4)
@@ -67,35 +97,8 @@ function update_toolbox(){
     echo "更新完成，请重新运行"
     exit 0
 }
-#修改配置
-modify_yaml_key() {
-  local yaml_file="$1"
-  local key_to_modify="$2"
-  local new_value="$3"
 
-  # 检查是否存在要修改的键
-  if [[ -f "$yaml_file" ]]; then
-    yaml_content=$(<"$yaml_file")
 
-    if [[ $yaml_content == *"$key_to_modify:"* ]]; then
-      # 使用正则表达式来查找要修改的键的行
-      key_line=$(echo "$yaml_content" | grep -n "$key_to_modify:" | cut -d: -f1)
-      # 计算缩进级别
-      indent=$(echo "${yaml_content}" | sed -n "${key_line}p" | awk -F"$key_to_modify:" '{print $1}')
-      # 替换键对应的值
-      new_line="${indent}${key_to_modify}: $new_value"
-      updated_yaml_content=$(echo "$yaml_content" | sed "${key_line}s/.*/$new_line/")
-      # 保存更新后的内容回文件
-      echo "$updated_yaml_content" > "$yaml_file"
-
-      echo "配置已更新"
-    else
-      echo "未找到要修改的键: $key_to_modify"
-    fi
-  else
-    echo "YAML 文件不存在: $yaml_file"
-  fi
-}
 #倒计时
 function countdown() {
     local seconds=$1
