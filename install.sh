@@ -1,6 +1,8 @@
 #!/bin/bash
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
     ipv6=$(curl -s https://ipv6.icanhazip.com/)
+    version_new=$(curl -s https://toolbox.yserver.top/latest/version)
+    version=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
     run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
     echo -----------------------------------------------
     echo -e "\033[32m 欢迎使用551工具箱\033[0m"
@@ -22,11 +24,8 @@
         read -p "检测到您没有安装551工具箱，是否安装？（y/n）" yn
         if [[ $yn == "y" || $yn == "Y" ]]; then
             mkdir /etc/toolbox
-            wget https://toolbox.yserver.top/latest/tool.sh -O /etc/toolbox/tool.sh
-            wget https://toolbox.yserver.top/latest/wordpress.yaml -O /etc/toolbox/wordpress.yaml
-            wget https://toolbox.yserver.top/latest/php.ini -O /etc/toolbox/php.ini
-            wget https://toolbox.yserver.top/latest/tls.sh -O /etc/toolbox/tls.sh
-            wget https://toolbox.yserver.top/latest/docker.service -O /etc/toolbox/docker.service
+            wget https://toolbox.yserver.top/latest/toobox.tar.gz -O /tmp/toolbox.tar.gz
+            tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar.gz -C /etc/toolbox
             ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
             chmod +x /etc/toolbox/tool.sh
             chmod +x /usr/local/bin/toolbox
@@ -35,7 +34,22 @@
             exit 1
         fi
     else
-        echo -e "\033[31m 你已安装\033[0m"
-        echo -e "\033[31m 输入\033[0m \033[33mtoolbox\033[0m \033[31m即可运行！\033[0m"
-        exit 1
+        if [ "$version_new" != "$version" ] ; then
+            echo -e "\033[32m 检测到新版本，是否执行覆盖更新？（y/n）\033[0m"
+            read -p "" yn
+            if [[ $yn == "y" || $yn == "Y" ]]; then
+                rm -rf /etc/toolbox
+                rm -rf /usr/local/bin/toolbox
+                wget https://toolbox.yserver.top/latest/toobox.tar.gz -O /tmp/toolbox.tar.gz
+                tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar.gz -C /etc/toolbox
+                chmod +x /etc/toolbox/tool.sh
+                echo -e "\033[32m 更新成功！\033[0m"
+                echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
+                exit 1
+            fi
+        else
+            echo -e "\033[32m 您已安装最新版本！\033[0m"
+            echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
+            exit 1
+        fi
     fi
