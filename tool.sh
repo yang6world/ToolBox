@@ -407,8 +407,7 @@ EOF
         esac
         ;;
     4)
-        echo -e "\033[32m 敬请期待 \033[0m"
-
+        advanced_options
         ;;
     5)
         echo -e "\033[32m 更新工具箱 \033[0m"
