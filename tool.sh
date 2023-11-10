@@ -157,8 +157,6 @@ function first_start(){
     fi
     #检查是否存在配置文件
     if [ ! -f "/etc/toolbox/config.yaml" ]; then
-        export password=$domain
-        password=$domain
         cat <<EOF > /etc/toolbox/config.yaml
 version: $version
 domain: $domain
