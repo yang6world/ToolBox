@@ -39,7 +39,7 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
     validator=$(cat /etc/toolbox/config.yaml | grep validator | awk '{print $2}')
     versions=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
     vouch=$(cat /etc/toolbox/config.yaml | grep vouch | awk '{print $2}')
-    docker_api_protect=$(cat /etc/toolbox/config.yaml | grep docker_api_protect | awk '{print $2}')
+    docker_aprotect=$(cat /etc/toolbox/config.yaml | grep docker_aprotect | awk '{print $2}')
     #对比配置文件版本号
     if [ "$version" != "$versions" ]; then
         modify_yaml_key /etc/toolbox/config.yaml version $version
@@ -163,7 +163,7 @@ version: $version
 domain: $domain
 vouch: false
 docker_api: true
-docker_api_protect: false
+docker_aprotect: false
 docker_v: $docker_v
 validator: null
 EOF
@@ -206,7 +206,7 @@ function advanced_options(){
     fi
     echo -e "\033[32m 3.重新生成TLS证书 \033[0m"
     echo -e "\033[32m 4.修改域名 \033[0m"
-    if [ "$docker_api_protect" = "true" ]; then
+    if [ "$docker_aprotect" = "true" ]; then
         echo -e "\033[31m 5.关闭docker_api守护 \033[0m"
     else
         echo -e "\033[32m 5.开启docker_api守护 \033[0m"
@@ -259,15 +259,15 @@ function advanced_options(){
         echo "你选择了选择保护器"
         ;;
     6)
-        if [ "$docker_api_protect" = "true" ]; then
+        if [ "$docker_aprotect" = "true" ]; then
             echo "你选择了关闭docker_api守护"
-            modify_yaml_key /etc/toolbox/config.yaml docker_api_protect false
-            sed -i '/docker_api_protect.sh/d' /var/spool/cron/crontabs/root
+            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect false
+            sed -i '/docker_aprotect.sh/d' /var/spool/cron/crontabs/root
         else
             echo "你选择了开启docker_api守护"
-            modify_yaml_key /etc/toolbox/config.yaml docker_api_protect true
-            #每小时执行一次docker_api_protect.sh
-            echo "0 * * * * /etc/toolbox/scripts/docker_api_protect.sh" >> /var/spool/cron/crontabs/root
+            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect true
+            #每小时执行一次docker_aprotect.sh
+            echo "0 * * * * /etc/toolbox/scripts/docker_aprotect.sh" >> /var/spool/cron/crontabs/root
         fi
         ;;
     *)
