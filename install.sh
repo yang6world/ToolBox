@@ -1,7 +1,7 @@
 #!/bin/bash
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
     ipv6=$(curl -s https://ipv6.icanhazip.com/)
-    version_new=$(curl -s https://toolbox.yserver.top/latest/version)
+    version_new=$(curl -s -L https://toolbox.yserver.top/version)
     version=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
     run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
     echo -----------------------------------------------
@@ -24,8 +24,8 @@
         read -p "检测到您没有安装551工具箱，是否安装？（y/n）" yn
         if [[ $yn == "y" || $yn == "Y" ]]; then
             mkdir /etc/toolbox
-            wget https://toolbox.yserver.top/latest/toobox.tar -O /tmp/toolbox.tar.gz
-            tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
+            wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar.gz
+            tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
             ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
             chmod +x /etc/toolbox/tool.sh
             chmod +x /usr/local/bin/toolbox
@@ -33,16 +33,19 @@
             echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
             exit 1
         fi
-    else
+    else 
         if [ "$version_new" != "$version" ] ; then
             echo -e "\033[32m 检测到新版本，是否执行覆盖更新？（y/n）\033[0m"
             read -p "" yn
             if [[ $yn == "y" || $yn == "Y" ]]; then
                 rm -rf /etc/toolbox
                 rm -rf /usr/local/bin/toolbox
-                wget https://toolbox.yserver.top/latest/toobox.tar -O /tmp/toolbox.tar
-                tar -zxvf /tmp/toolbox.tar -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
+                mkdir /etc/toolbox
+                wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar
+                tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
                 chmod +x /etc/toolbox/tool.sh
+                ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
+                chmod +x /usr/local/bin/toolbox
                 echo -e "\033[32m 更新成功！\033[0m"
                 echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
                 exit 1
@@ -52,4 +55,5 @@
             echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
             exit 1
         fi
+        
     fi
