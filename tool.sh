@@ -8,6 +8,8 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
     docker_api=$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')
     validator=$(cat /etc/toolbox/config.yaml | grep validator | awk '{print $2}')
     versions=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
+    vouch=$(cat /etc/toolbox/config.yaml | grep vouch | awk '{print $2}')
+    docker_api_protect=$(cat /etc/toolbox/config.yaml | grep docker_api_protect | awk '{print $2}')
 fi
 #对比配置文件版本号
 if [ "$version" != "$versions" ]; then
@@ -154,6 +156,7 @@ version: $version
 domain: $domain
 vouch: false
 docker_api: true
+docker_api_protect: false
 validator: null
 EOF
         mkdir -p /etc/toolbox
@@ -182,6 +185,87 @@ EOF
 
 
 }
+function advanced_options(){
+    graph_screen
+    if [ "$docker_api" = "true" ]; then
+        echo -e "\033[31m 1.关闭docker_api \033[0m"
+    else
+        echo -e "\033[32m 1.开启docker_api \033[0m"
+    fi
+    if [ "$vouch" = "true" ]; then
+        echo -e "\033[31m 2.关闭vouch \033[0m"
+    else
+        echo -e "\033[32m 2.开启vouch \033[0m"
+    fi
+    echo -e "\033[32m 3.重新生成TLS证书 \033[0m"
+    echo -e "\033[32m 4.修改域名 \033[0m"
+    if [ "$docker_api_protect" = "true" ]; then
+        echo -e "\033[31m 5.关闭docker_api守护 \033[0m"
+    else
+        echo -e "\033[32m 5.开启docker_api守护 \033[0m"
+    fi
+    if [ "$vouch" = "true" ]; then
+        echo -e "\033[32m 6.选择身份验证器（OIDC） \033[0m"
+    fi
+    echo -e "\033[32m 点击任意键返回上一级 \033[0m"
+    read choice3
+    case "$choice3" in
+    1)
+        if [ "$docker_api" = "true" ]; then
+            echo "你选择了关闭docker_api"
+            modify_yaml_key /etc/toolbox/config.yaml docker_api false
+            systemctl stop docker 
+            rm /lib/systemd/system/docker.service
+            cp /etc/toolbox/config/docker.service /lib/systemd/system/docker.service
+            sudo systemctl daemon-reload
+            sudo systemctl restart docker.service
+        else
+            echo "你选择了开启docker_api"
+            modify_yaml_key /etc/toolbox/config.yaml docker_api true
+            systemctl stop docker 
+            rm /lib/systemd/system/docker.service
+            cp /etc/toolbox/config/docker.service-api /lib/systemd/system/docker.service
+            sudo systemctl daemon-reload
+            sudo systemctl restart docker.service
+        fi
+        ;;
+    2)
+        if [ "$vouch" = "true" ]; then
+            echo "你选择了关闭vouch"
+            modify_yaml_key /etc/toolbox/config.yaml vouch false
+        else
+            echo "你选择了开启vouch"
+            modify_yaml_key /etc/toolbox/config.yaml vouch true
+        fi
+        ;;
+    3)
+        echo "你选择了重新生成TLS证书"
+        chmod +x /etc/toolbox/tls.sh
+        bash /etc/toolbox/tls.sh
+        ;;
+    4)
+        echo "你选择了修改域名"
+        read -p "请输入你的域名（如xxx.yserver.top）：" domain
+        modify_yaml_key /etc/toolbox/config.yaml domain $domain
+        ;;
+    5)
+        echo "你选择了选择保护器"
+        ;;
+    6)
+        if [ "$docker_api_protect" = "true" ]; then
+            echo "你选择了关闭docker_api守护"
+            modify_yaml_key /etc/toolbox/config.yaml docker_api_protect false
+        else
+            echo "你选择了开启docker_api守护"
+            modify_yaml_key /etc/toolbox/config.yaml docker_api_protect true
+        fi
+        ;;
+    *)
+        perview
+        ;;
+    esac
+}
+
 
 
 function install_app(){
@@ -275,7 +359,7 @@ EOF
     export password=$domain
     password=$domain
     echo -e "\033[32m 1.安装/卸载应用服务 \033[0m"
-    echo -e "\033[32m 2.列出应用配置文件 \033[0m"
+    echo -e "\033[32m 2.列出应用详细信息 \033[0m"
     echo -e "\033[32m 3.服务器管理 \033[0m"
     echo -e "\033[32m 4.高级选项 \033[0m"
     echo -e "\033[32m 5.更新工具箱 \033[0m"
