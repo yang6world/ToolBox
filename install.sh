@@ -24,8 +24,8 @@
         read -p "检测到您没有安装551工具箱，是否安装？（y/n）" yn
         if [[ $yn == "y" || $yn == "Y" ]]; then
             mkdir /etc/toolbox
-            wget https://toolbox.yserver.top/latest/toobox.tar.gz -O /tmp/toolbox.tar.gz
-            tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar.gz -C /etc/toolbox
+            wget https://toolbox.yserver.top/latest/toobox.tar -O /tmp/toolbox.tar.gz
+            tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
             ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
             chmod +x /etc/toolbox/tool.sh
             chmod +x /usr/local/bin/toolbox
@@ -40,8 +40,8 @@
             if [[ $yn == "y" || $yn == "Y" ]]; then
                 rm -rf /etc/toolbox
                 rm -rf /usr/local/bin/toolbox
-                wget https://toolbox.yserver.top/latest/toobox.tar.gz -O /tmp/toolbox.tar.gz
-                tar -zxvf /tmp/toolbox.tar.gz -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar.gz -C /etc/toolbox
+                wget https://toolbox.yserver.top/latest/toobox.tar -O /tmp/toolbox.tar
+                tar -zxvf /tmp/toolbox.tar -C /etc/toolbox || tar -zxf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
                 chmod +x /etc/toolbox/tool.sh
                 echo -e "\033[32m 更新成功！\033[0m"
                 echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
