@@ -30,6 +30,7 @@ modify_yaml_key() {
     echo "YAML 文件不存在: $yaml_file"
   fi
 }
+
 if [ -f "/etc/toolbox/config.yaml" ]; then
     domain=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
     ipv4=$(curl -s https://ipv4.icanhazip.com/)
@@ -59,10 +60,10 @@ fi
 free_mem=$(free -m | awk '/Mem/ {print $7}')
 free_disk=$(df -h | awk '/\/$/ {print $4}')
 #获取当前docker版本
-docker_version=$(docker -v | awk '{print $3}' | sed 's/,//g')
+docker_v=$(docker -v | awk '{print $3}' | sed 's/,//g')
 function graph_screen(){
     echo -----------------------------------------------------
-    echo -e "\033[32m 欢迎使用551工具箱\033[0m \033[32m版本：\033[0m\033[44m"$version"\033[0m  \033[32mDocker版本：\033[0m\033[44m"$docker_version"\033[0m" 
+    echo -e "\033[32m 欢迎使用551工具箱\033[0m \033[32m版本：\033[0m\033[44m"$version"\033[0m  \033[32mDocker版本：\033[0m\033[44m"$docker_v"\033[0m" 
     echo -e "\033[32m 本机ipv4：\033[0m \033[33m"$ipv4"\033[0m \033[32m所在位置：\033[0m \033[33m"$country"\033[0m "
     if [ ! -n "$ipv6" ]; then
         echo -e "\033[32m 本机ipv6：\033[0m \033[33m未检测到ipv6\033[0m"
@@ -163,7 +164,7 @@ domain: $domain
 vouch: false
 docker_api: true
 docker_api_protect: false
-docker_version: $docker_version
+docker_v: $docker_v
 validator: null
 EOF
         cp -r ./* /etc/toolbox/

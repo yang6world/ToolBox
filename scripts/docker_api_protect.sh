@@ -28,17 +28,17 @@ modify_yaml_key() {
     echo "YAML 文件不存在: $yaml_file"
   fi
 }
-docker_version=$(docker -v | awk '{print $3}' | sed 's/,//g')
-docker_version_old=$(cat /etc/toolbox/config.yaml | grep docker_version | awk '{print $2}')
+docker_v=$(docker -v | awk '{print $3}' | sed 's/,//g')
+docker_v_old=$(cat /etc/toolbox/config.yaml | grep docker_v | awk '{print $2}')
 function protect_dockerapi(){
     #对比docker版本
-    if [ "$docker_version" != "$docker_version_old" ] ; then
+    if [ "$docker_v" != "$docker_v_old" ] ; then
         systemctl stop docker 
         rm /lib/systemd/system/docker.service
         cp /etc/toolbox/config/docker.service-api /lib/systemd/system/docker.service
         sudo systemctl daemon-reload
         sudo systemctl restart docker.service
-        modify_yaml_key /etc/toolbox/config.yaml docker_version $docker_version
+        modify_yaml_key /etc/toolbox/config.yaml docker_v $docker_v
     fi
 
 }
