@@ -151,6 +151,10 @@ function first_start(){
         echo "acme.sh安装失败"
         exit 1
     fi
+    #检查是否存在文件夹
+    if [ ! -d "/etc/toolbox" ]; then
+        mkdir /etc/toolbox
+    fi
     #检查是否存在配置文件
     if [ ! -f "/etc/toolbox/config.yaml" ]; then
         export password=$domain
@@ -164,8 +168,7 @@ docker_api_protect: false
 docker_version: $docker_version
 validator: null
 EOF
-        mkdir -p /etc/toolbox
-        cp ./* /etc/toolbox/
+        cp -r ./* /etc/toolbox/
         ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
         chmod +x /etc/toolbox/tool.sh
         chmod +x /usr/local/bin/toolbox
