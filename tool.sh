@@ -108,6 +108,7 @@ function countdown() {
     echo ""  # 换行以便下一个命令正常显示
 }
 
+
 #初始化
 function first_start(){
     read -p "请输入你的域名（如xxx.yserver.top）：" domain
@@ -157,6 +158,7 @@ domain: $domain
 vouch: false
 docker_api: true
 docker_api_protect: false
+docker_version: $docker_version
 validator: null
 EOF
         mkdir -p /etc/toolbox
@@ -255,9 +257,12 @@ function advanced_options(){
         if [ "$docker_api_protect" = "true" ]; then
             echo "你选择了关闭docker_api守护"
             modify_yaml_key /etc/toolbox/config.yaml docker_api_protect false
+            sed -i '/docker_api_protect.sh/d' /var/spool/cron/crontabs/root
         else
             echo "你选择了开启docker_api守护"
             modify_yaml_key /etc/toolbox/config.yaml docker_api_protect true
+            #每小时执行一次docker_api_protect.sh
+            echo "0 * * * * /etc/toolbox/scripts/docker_api_protect.sh" >> /var/spool/cron/crontabs/root
         fi
         ;;
     *)
@@ -297,46 +302,45 @@ function install_app(){
     1)
       if [ ! -f "/etc/nginx/sites-enabled/wordpress" ]; then
         echo "你选择了安装wordpress"
-        chmod +x /etc/toolbox/scripts/wordpress.sh
-        bash /etc/toolbox/scripts/wordpress.sh install
+        chmod +x /etc/toolbox/scripts/app/wordpress.sh
+        bash /etc/toolbox/scripts/app/wordpress.sh install
       else
         echo "你选择了卸载wordpress"
-        chmod +x /etc/toolbox/scripts/wordpress.sh
-        bash /etc/toolbox/scripts/wordpress.sh uninstall
+        chmod +x /etc/toolbox/scripts/app/wordpress.sh
+        bash /etc/toolbox/scripts/app/wordpress.sh uninstall
       fi
       ;;
     2)
       if [ ! -f "/etc/nginx/sites-enabled/vscode" ]; then
         echo "你选择了安装vscode"
-        chmod +x /etc/toolbox/scripts/vscode.sh
-        bash /etc/toolbox/scripts/vscode.sh install
+        chmod +x /etc/toolbox/scripts/app/vscode.sh
+        bash /etc/toolbox/scripts/app/vscode.sh install
       else
         echo "你选择了卸载vscode"
-        chmod +x /etc/toolbox/scripts/vscode.sh
-        bash /etc/toolbox/scripts/vscode.sh uninstall
+        chmod +x /etc/toolbox/scripts/app/vscode.sh
+        bash /etc/toolbox/scripts/app/vscode.sh uninstall
       fi
       ;;
     3) 
       if [ ! -f "/etc/nginx/sites-enabled/chatgpt" ]; then
         echo "你选择了安装chatGPT"
-        chmod +x /etc/toolbox/scripts/chatgpt.sh
-        bash /etc/toolbox/scripts/chatgpt.sh install
+        chmod +x /etc/toolbox/scripts/app/chatgpt.sh
+        bash /etc/toolbox/scripts/app/chatgpt.sh install
       else
         echo "你选择了卸载chatGPT"
-        chmod +x /etc/toolbox/scripts/chatgpt.sh
-        bash /etc/toolbox/scripts/chatgpt.sh uninstall
+        chmod +x /etc/toolbox/scripts/app/chatgpt.sh
+        bash /etc/toolbox/scripts/app/chatgpt.sh uninstall
       fi
       ;;
     4)
         if [ ! -f "/etc/nginx/sites-enabled/cloudreve" ]; then
             echo "你选择了安装cloudreve"
-            cloudreve
+            chmod +x /etc/toolbox/scripts/app/cloudreve.sh
+            bash /etc/toolbox/scripts/app/cloudreve.sh install
         else
             echo "你选择了卸载cloudreve"
-            docker stop cloudreve
-            docker rm -f cloudreve
-            rm -rf /etc/nginx/sites-enabled/cloudreve
-            nginx_restart
+            chmod +x /etc/toolbox/scripts/app/cloudreve.sh
+            bash /etc/toolbox/scripts/app/cloudreve.sh uninstall
         fi
         ;;
     *)
