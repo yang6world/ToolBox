@@ -131,8 +131,12 @@ function first_start(){
     fi
     #安装docker-compose
     if [ ! -x "$(command -v docker-compose)" ]; then
-
-        sudo curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        if [ "$country" == "CN"]; then
+            echo "使用国内源"
+            sudo curl -L "https://get.daocloud.io/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        else
+            sudo curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        fi
         sudo chmod +x /usr/local/bin/docker-compose
         sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     fi
@@ -143,7 +147,14 @@ function first_start(){
     fi
     #安装acme.sh
     if [ ! -x "$(command -v acme.sh)" ]; then
-        curl https://get.acme.sh | sh 
+        if [ "$country" == "CN"]; then
+            read -p "请输入你的电子邮件：" mail
+            git clone https://gitee.com/neilpang/acme.sh.git
+            cd acme.sh
+            ./acme.sh --install -m $mail
+        else
+            curl https://get.acme.sh | sh 
+        fi
         rm -rf /usr/local/bin/acme.sh
         ln -s  /root/.acme.sh/acme.sh /usr/local/bin/acme.sh
         acme.sh --set-default-ca --server letsencrypt
@@ -190,7 +201,8 @@ EOF
             echo "docker_api已开启"
         fi
     fi
-
+    echo "初始化完成"
+    exit 1
 
 }
 function advanced_options(){
