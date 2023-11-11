@@ -140,6 +140,10 @@ EOF
 #$1为install则执行安装uninstall则执行卸载
 case $1 in
     install)
+        #提醒解析域名的名称
+        echo -e "\033[32m 请将$domain 解析到你的服务器 \033[0m"
+        #用户确认
+        read -p "域名解析完成后请按回车键继续"  
         logto_install
         ;;
     uninstall)
