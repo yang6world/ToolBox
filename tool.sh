@@ -111,16 +111,55 @@ function countdown() {
 
     echo ""  # 换行以便下一个命令正常显示
 }
-
+function default_config(){
+    vouch=false
+    docker_api=true
+    validator=null
+    docker_aprotect=false
+    read -p "请输入你的域名（如xxx.yserver.top）：" domain
+    read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
+}
 
 #初始化
 function first_start(){
-    if [ -n "$(lsof -i:80)" ]; then
-        echo "检测到你的环境内有其他web服务正在运行"
-        exit 1
+    if [ -f "/tmp/config.yaml" ]; then
+        if [ -n "$(cat /tmp/config.yaml | grep vouch)" ]; then
+            vouch=$(cat /tmp/config.yaml | grep vouch | awk '{print $2}')
+        else
+            vouch=false
+        fi
+        if [ -n "$(cat /tmp/config.yaml | grep docker_api)" ]; then
+            docker_api=$(cat /tmp/config.yaml | grep docker_api | awk '{print $2}')
+        else
+            docker_api=true
+        fi
+        if [ -n "$(cat /tmp/config.yaml | grep validator)" ]; then
+            validator=$(cat /tmp/config.yaml | grep validator | awk '{print $2}')
+        else
+            validator=null
+        fi
+        if [ -n "$(cat /tmp/config.yaml | grep docker_aprotect)" ]; then
+            docker_aprotect=$(cat /tmp/config.yaml | grep docker_aprotect | awk '{print $2}')
+        else
+            docker_aprotect=false
+        fi
+        if [ -n "$(cat /tmp/config.yaml | grep domain)" ]; then
+            domain=$(cat /tmp/config.yaml | grep domain | awk '{print $2}')
+        else
+            read -p "请输入你的域名（如xxx.yserver.top）：" domain
+        fi
+        if [ -n "$(cat /tmp/config.yaml | grep universal_password)" ]; then
+            password=$(cat /tmp/config.yaml | grep universal_password | awk '{print $2}')
+        else
+            read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
+        fi       
+    else
+        default_config
+        if [ -n "$(lsof -i:80)" ]; then
+            echo "检测到你的环境内有其他服务占用80端口"
+            exit 1
+        fi
     fi
-    read -p "请输入你的域名（如xxx.yserver.top）：" domain
-    read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
     echo -e "\033[32m 正在进行一些准备工作\033[0m"
     apt-get update > /dev/null
     apt-get install -y curl wget nginx sudo jq > /dev/null
@@ -178,11 +217,11 @@ function first_start(){
         cat <<EOF > /etc/toolbox/config.yaml
 version: $version
 domain: $domain
-vouch: false
-docker_api: true
-docker_aprotect: false
+vouch: $vouch
+docker_api: $docker_api
+docker_aprotect: $docker_aprotect
 docker_v: $docker_v
-validator: null
+validator: $validator
 universal_password: $password
 EOF
         cp -r ./* /etc/toolbox/

@@ -38,6 +38,7 @@
             echo -e "\033[32m 检测到新版本，是否执行覆盖更新？（y/n）\033[0m"
             read -p "" yn
             if [[ $yn == "y" || $yn == "Y" ]]; then
+                cp /etc/toolbox/config.yaml /tmp/config.yaml
                 rm -rf /etc/toolbox
                 rm -rf /usr/local/bin/toolbox
                 mkdir /etc/toolbox
