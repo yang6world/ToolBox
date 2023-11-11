@@ -281,9 +281,6 @@ function advanced_options(){
         modify_yaml_key /etc/toolbox/config.yaml domain $domain
         ;;
     5)
-        echo "请选择你的验证器"
-        ;;
-    6)
         if [ "$docker_aprotect" = "true" ]; then
             echo "你选择了关闭docker_api守护"
             modify_yaml_key /etc/toolbox/config.yaml docker_aprotect false
@@ -293,6 +290,32 @@ function advanced_options(){
             modify_yaml_key /etc/toolbox/config.yaml docker_aprotect true
             #每小时执行一次docker_aprotect.sh
             echo "0 * * * * /etc/toolbox/scripts/docker_aprotect.sh" >> /var/spool/cron/crontabs/root
+        fi
+        ;;
+    6)
+        if [ "$vouch" = "true" ]; then
+            echo "你选择了选择身份验证器（OIDC）"
+            if [ "$validator" = "null"]
+                echo -e "\033[32m 当前选项下你可用直接在vouch中设置OICD认证服务 \033[0m"
+                echo -e "\033[31m 是否需要切换为使用logto搭建本地认证 \033[0m"
+            else
+                echo -e "\033[32m 你选择logto作为认证器，请设置vouch \033[0m"
+                echo -e "\033[33m 是否需要切换为使用微软/谷歌/GitHub等的方式认证 \033[0m"
+            fi
+            read -p "输入y切换，输入n跳过：" update
+            if [ "$update" = "y" ]; then
+                if [ "$validator" = "null"]
+                    echo "你选择了使用logto"
+                    modify_yaml_key /etc/toolbox/config.yaml validator logto
+                    chmod +x /etc/toolbox/scripts/app/logto.sh
+                    bash /etc/toolbox/scripts/app/logto.sh install
+                else
+                    echo "你选择了使用微软/谷歌/GitHub等的方式认证"
+                    modify_yaml_key /etc/toolbox/config.yaml validator null
+                    chmod +x /etc/toolbox/scripts/app/vouch.sh
+                    bash /etc/toolbox/scripts/app/logto uninstall
+                fi
+            fi
         fi
         ;;
     7)
@@ -420,6 +443,9 @@ function perview(){
         echo -e "\033[32m 1.重启服务器 \033[0m"
         echo -e "\033[32m 2.重启docker \033[0m"
         echo -e "\033[32m 3.重启nginx \033[0m"
+        echo -e "\033[32m 4.展示服务器进程 \033[0m"  
+        echo -e "\033[32m 5.展示docker进程信息 \033[0m"
+        echo -e "\033[32m 6.修改当前用户ssh登陆密码 \033[0m"      
         echo -e "\033[32m 点击任意键返回上一级 \033[0m"
         read choice2
         case "$choice2" in
@@ -434,6 +460,24 @@ function perview(){
         3)
             echo -e "\033[32m 重启nginx \033[0m"
             sysrtemctl restart nginx
+            ;;
+        4)
+            echo -e "\033[32m 展示服务器进程 \033[0m"
+            top
+            clear
+            perview
+            ;;
+        5)
+            echo -e "\033[32m 展示docker进程信息 \033[0m"
+            docker stats
+            clear
+            perview
+            ;;
+        6)
+            echo -e "\033[32m 修改当前用户ssh登陆密码 \033[0m"
+            passwd
+            clear
+            perview
             ;;
         *)
             perview
