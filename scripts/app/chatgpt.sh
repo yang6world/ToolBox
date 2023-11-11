@@ -5,6 +5,9 @@ domain=gpt.$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
 domain_vouch=auth.$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
 vouch=$(cat /etc/toolbox/config.yaml | grep vouch | awk '{print $2}')
 universal_password=$(cat /etc/toolbox/config.yaml | grep universal_password | awk '{print $2}')
+base_url=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_url | awk -F 'base_url: ' '{print $2}')
+api_key=$(cat /etc/toolbox/config/chatgpt.yaml | grep api_key | awk -F 'api_key: ' '{print $2}')
+base_model=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_model | awk -F 'base_model: ' '{print $2}')
 function domain_check(){
     echo -e "\033[32m 检查域名解析是否正确 \033[0m"
     ipv4s=`dig +short -t A $domain`|| ipv4s=`ping $domain -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
@@ -33,16 +36,18 @@ function nginx_restart(){
     echo -e "\033[32m 重启nginx \033[0m"
     service nginx restart
 }
+
+
+
+
 function chatgpt_web_install_vouch(){
 domain_check
-echo -e "\033[32m 安装的chatgpt可使用单点认证 \033[0m"
-read -p "输入你的api——key：" gpt_key
-read -p "输入你的url：" gpt_url
+echo -e "\033[32m 安装的chatgpt将使用单点认证 \033[0m"
 docker run --name chatgpt-web --restart=always -d -p 3002:3002 \
-  --env OPENAI_API_KEY=$gpt_key \
-  --env OPENAI_API_BASE_URL=$gpt_url \
+  --env OPENAI_API_KEY=$api_key \
+  --env OPENAI_API_BASE_URL=$base_url \
   --env MAX_REQUESTS_PER_HOUR=0 \
-  --env OPENAI_API_MODEL=gpt-3.5-turbo-16k \
+  --env OPENAI_API_MODEL=$base_model \
   chenzhaoyu94/chatgpt-web
 echo -e "\033[32m 安装完成默认使用GPT3.5 \033[0m"
 cat > /etc/nginx/sites-enabled/chatgpt<< EOF
@@ -147,15 +152,12 @@ nginx_restart
 
 function chatgpt_web_install(){
 domain_check
-echo -e "\033[32m 安装的chatgpt可使用单点认证 \033[0m"
-read -p "输入你的api——key：" gpt_key
-read -p "输入你的url：" gpt_url
 docker run --name chatgpt-web --restart=always -d -p 3002:3002 \
-  --env OPENAI_API_KEY=$gpt_key \
-  --env OPENAI_API_BASE_URL=$gpt_url \
+  --env OPENAI_API_KEY=$api_key \
+  --env OPENAI_API_BASE_URL=$base_url \
   --env MAX_REQUESTS_PER_HOUR=0 \
   --env AUTH_SECRET_KEY=$universal_password \
-  --env OPENAI_API_MODEL=gpt-3.5-turbo-16k \
+  --env OPENAI_API_MODEL=$base_model \
   chenzhaoyu94/chatgpt-web
 echo -e "\033[32m 安装完成默认使用GPT3.5 \033[0m"
 cat > /etc/nginx/sites-enabled/chatgpt<< EOF

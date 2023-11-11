@@ -27,7 +27,7 @@ modify_yaml_key() {
     echo "YAML 文件不存在: $yaml_file"
   fi
 }
-if [-f "/etc/toolbox/config/chatgpt.yaml"]; then
+if [ -f "/etc/toolbox/config/chatgpt.yaml" ]; then
     base_model=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_model | awk -F 'base_model: ' '{print $2}')
     base_url=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_url | awk -F 'base_url: ' '{print $2}')
     api_key=$(cat /etc/toolbox/config/chatgpt.yaml | grep api_key | awk -F 'api_key: ' '{print $2}')
@@ -114,8 +114,16 @@ function start(){
 graph_screen
 echo -e "\033[32m 请选择要执行的操作：\033[0m "
 #1.安装chatgpt-web 2.安装chatgpt-next 3.设置
-echo -e "\033[32m 1. 安装chatgpt-web项目\033[0m "
-echo -e "\033[32m 2. 安装chatgpt-next项目\033[0m "
+if [ ! -f "/etc/nginx/sites-enabled/chatgpt" ]; then
+    echo -e "\033[32m 1. 安装chatgpt-web项目\033[0m "
+else
+    echo -e "\033[31m 1. 卸载chatgpt-web项目\033[0m "
+fi
+if [ ! -f "/etc/nginx/sites-enabled/chatgpt_next" ]; then
+    echo -e "\033[32m 2. 安装chatgpt-next项目\033[0m "
+else
+    echo -e "\033[31m 2. 卸载chatgpt-next项目\033[0m "
+fi
 echo -e "\033[32m 3. 设置\033[0m "
 read -p "请输入序号：" num
 case $num in
@@ -171,3 +179,4 @@ case $num in
         ;;
 esac
 }
+start
