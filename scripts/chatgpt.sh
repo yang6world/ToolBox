@@ -27,9 +27,11 @@ modify_yaml_key() {
     echo "YAML 文件不存在: $yaml_file"
   fi
 }
-base_model=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_model | awk -F 'base_model: ' '{print $2}')
-base_url=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_url | awk -F 'base_url: ' '{print $2}')
-api_key=$(cat /etc/toolbox/config/chatgpt.yaml | grep api_key | awk -F 'api_key: ' '{print $2}')
+if [-f "/etc/toolbox/config/chatgpt.yaml"]; then
+    base_model=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_model | awk -F 'base_model: ' '{print $2}')
+    base_url=$(cat /etc/toolbox/config/chatgpt.yaml | grep base_url | awk -F 'base_url: ' '{print $2}')
+    api_key=$(cat /etc/toolbox/config/chatgpt.yaml | grep api_key | awk -F 'api_key: ' '{print $2}')
+fi
 function graph_screen(){
     echo -----------------------------------------------------
     echo -e "\033[32m ChatGPT应用\033[0m " 
