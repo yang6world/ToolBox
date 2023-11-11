@@ -1,6 +1,6 @@
 #!/bin/bash
 ipv4=$(curl -s https://ipv4.icanhazip.com/)
-domain=auth.$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
+domain=login.$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
 function domain_check(){
     echo -e "\033[32m 检查域名解析是否正确 \033[0m"
     ipv4s=`dig +short -t A $domain`
