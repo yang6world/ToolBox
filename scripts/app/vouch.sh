@@ -45,6 +45,7 @@ function vouch_install(){
     docker run -d \
         -p 9090:9090 \
         --name vouch-proxy \
+        --restart=always \
         -v /root/config/vouch:/config \
         quay.io/vouch/vouch-proxy
     cat > /etc/nginx/sites-enabled/vouch<< EOF
@@ -87,6 +88,16 @@ EOF
 case $1 in
     install)
         vouch_install
+        #判断是否安装了chatgpt
+        if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
+            chmod +x /etc/toolbox/scripts/app/chatgpt.sh vouch
+            bash /etc/toolbox/scripts/app/chatgpt.sh
+        fi 
+        #判断是否安装了vscode
+        if [ -f "/etc/nginx/sites-enabled/vscode" ]; then
+            chmod +x /etc/toolbox/scripts/app/vscode.sh vouch
+            bash /etc/toolbox/scripts/app/vscode.sh
+        fi
     ;;
     uninstall)
         #对选项进行二次确认
@@ -98,5 +109,14 @@ case $1 in
         rm -rf /root/config/vouch
         rm -rf /etc/nginx/sites-enabled/vouch
         nginx_restart
+        if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
+            chmod +x /etc/toolbox/scripts/app/chatgpt.sh vouch
+            bash /etc/toolbox/scripts/app/chatgpt.sh
+        fi 
+        #判断是否安装了vscode
+        if [ -f "/etc/nginx/sites-enabled/vscode" ]; then
+            chmod +x /etc/toolbox/scripts/app/vscode.sh vouch
+            bash /etc/toolbox/scripts/app/vscode.sh
+        fi
     ;;
 esac

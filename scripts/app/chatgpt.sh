@@ -38,7 +38,7 @@ domain_check
 echo -e "\033[32m 安装的chatgpt可使用单点认证 \033[0m"
 read -p "输入你的api——key：" gpt_key
 read -p "输入你的url：" gpt_url
-docker run --name chatgpt-web -d -p 3002:3002 \
+docker run --name chatgpt-web --restart=always -d -p 3002:3002 \
   --env OPENAI_API_KEY=$gpt_key \
   --env OPENAI_API_BASE_URL=$gpt_url \
   --env MAX_REQUESTS_PER_HOUR=0 \
@@ -152,7 +152,7 @@ domain_check
 echo -e "\033[32m 安装的chatgpt可使用单点认证 \033[0m"
 read -p "输入你的api——key：" gpt_key
 read -p "输入你的url：" gpt_url
-docker run --name chatgpt-web -d -p 3002:3002 \
+docker run --name chatgpt-web --restart=always -d -p 3002:3002 \
   --env OPENAI_API_KEY=$gpt_key \
   --env OPENAI_API_BASE_URL=$gpt_url \
   --env MAX_REQUESTS_PER_HOUR=0 \

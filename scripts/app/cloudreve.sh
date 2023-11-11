@@ -38,6 +38,7 @@ function cloudreve_install(){
     && touch /root/config/cloudreve/cloudreve.db
     docker run -d \
     --name cloudreve \
+    --restart=always \
     -p 5212:5212 \
     --mount type=bind,source=/root/config/cloudreve/conf.ini,target=/cloudreve/conf.ini \
     --mount type=bind,source=/root/config/cloudreve/cloudreve.db,target=/cloudreve/cloudreve.db \

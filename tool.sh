@@ -459,7 +459,7 @@ function perview(){
             ;;
         3)
             echo -e "\033[32m 重启nginx \033[0m"
-            sysrtemctl restart nginx
+            systemctl restart nginx
             ;;
         4)
             echo -e "\033[32m 展示服务器进程 \033[0m"
