@@ -354,11 +354,7 @@ function install_app(){
     else
         echo -e "\033[31m 2.卸载vscode \033[0m"
     fi
-    if [ ! -f "/etc/nginx/sites-enabled/chatgpt" ]; then
-        echo -e "\033[32m 3.安装chatGPT \033[0m"
-    else
-        echo -e "\033[31m 3.卸载chatGPT \033[0m"
-    fi
+    echo -e "\033[32m 3.安装chatgpt(你的聊天机器人) \033[0m"
     if [ ! -f "/etc/nginx/sites-enabled/cloudreve" ]; then
         echo -e "\033[32m 4.安装cloudreve(你的个人云网盘) \033[0m"
     else
