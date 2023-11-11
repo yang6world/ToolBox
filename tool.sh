@@ -115,6 +115,10 @@ function countdown() {
 
 #初始化
 function first_start(){
+    if [ -n "$(lsof -i:80)" ]; then
+        echo "检测到你的环境内有其他web服务正在运行"
+        exit 1
+    fi
     read -p "请输入你的域名（如xxx.yserver.top）：" domain
     read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
     echo -e "\033[32m 正在进行一些准备工作\033[0m"
@@ -192,8 +196,8 @@ EOF
         #是否开启端口2376
         if [ !  -n "$(lsof -i:2376)"  ]; then
             echo "未检测到证书"
-            chmod +x /etc/toolbox/tls.sh
-            bash /etc/toolbox/tls.sh
+            chmod +x /etc/toolbox/scripts/tls.sh
+            bash /etc/toolbox/scripts/tls.sh
             systemctl stop docker 
             rm /lib/systemd/system/docker.service
             cp /etc/toolbox/config/docker.service-api /lib/systemd/system/docker.service
@@ -257,15 +261,19 @@ function advanced_options(){
         if [ "$vouch" = "true" ]; then
             echo "你选择了关闭vouch"
             modify_yaml_key /etc/toolbox/config.yaml vouch false
+            chmod +x /etc/toolbox/scripts/app/vouch.sh
+            bash /etc/toolbox/scripts/app/vouch.sh uninstall
         else
             echo "你选择了开启vouch"
             modify_yaml_key /etc/toolbox/config.yaml vouch true
+            chmod +x /etc/toolbox/scripts/app/vouch.sh
+            bash /etc/toolbox/scripts/app/vouch.sh install
         fi
         ;;
     3)
         echo "你选择了重新生成TLS证书"
-        chmod +x /etc/toolbox/tls.sh
-        bash /etc/toolbox/tls.sh
+        chmod +x /etc/toolbox/scripts/tls.sh
+        bash /etc/toolbox/scripts/tls.sh
         ;;
     4)
         echo "你选择了修改域名"
@@ -273,7 +281,7 @@ function advanced_options(){
         modify_yaml_key /etc/toolbox/config.yaml domain $domain
         ;;
     5)
-        echo "你选择了选择保护器"
+        echo "请选择你的验证器"
         ;;
     6)
         if [ "$docker_aprotect" = "true" ]; then
@@ -391,14 +399,7 @@ function perview(){
     if [ ! -f "$file" ]; then
         first_start
     fi
-    if [ !  -n "$(cat /etc/toolbox/config.yaml | grep docker_api | awk '{print $2}')" ]; then
-    cat <<EOF >> /etc/toolbox/config.yaml
-docker_api: true
-EOF
-    fi
     chack_update
-    export password=$domain
-    password=$domain
     echo -e "\033[32m 1.安装/卸载应用服务 \033[0m"
     echo -e "\033[32m 2.列出应用详细信息 \033[0m"
     echo -e "\033[32m 3.服务器管理 \033[0m"
@@ -411,7 +412,8 @@ EOF
         install_app
         ;;
     2)
-        echo -e
+        chmod +x /etc/toolbox/scripts/info.sh
+        bash /etc/toolbox/scripts/info.sh
         ;;
     3)
         graph_screen

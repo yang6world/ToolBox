@@ -6,7 +6,7 @@
 
 # 以下是配置信息
 # --[BEGIN]------------------------------
-CODE="xjp"
+CODE="toolbox"
 PASSWORD=$(cat /etc/toolbox/config.yaml | grep domain | awk '{print $2}')
 COUNTRY="CN"
 STATE="BEIJING"
