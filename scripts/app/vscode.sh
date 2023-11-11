@@ -251,6 +251,8 @@ case $1 in
         else
             vscode_install
         fi
+        docker exec -it code-server bash -c "chmod +x /etc/s6-overlay/s6-rc.d/init-code-server/run"
+        docker restart code-server
         ;;
     uninstall)
         #对选项进行二次确认
@@ -280,6 +282,8 @@ case $1 in
             nginx_restart
             vscode_install
         fi
+        docker exec -it code-server bash -c "chmod +x /etc/s6-overlay/s6-rc.d/init-code-server/run"
+        docker restart code-server
         ;;
     reinstall)
         docker stop code-server
@@ -289,6 +293,8 @@ case $1 in
         else
             vscode_install
         fi
+        docker exec -it code-server bash -c "chmod +x /etc/s6-overlay/s6-rc.d/init-code-server/run"
+        docker restart code-server
         ;;
 
 

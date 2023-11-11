@@ -390,15 +390,8 @@ function install_app(){
       fi
       ;;
     3) 
-      if [ ! -f "/etc/nginx/sites-enabled/chatgpt" ]; then
-        echo "你选择了安装chatGPT"
-        chmod +x /etc/toolbox/scripts/app/chatgpt.sh
-        bash /etc/toolbox/scripts/app/chatgpt.sh install
-      else
-        echo "你选择了卸载chatGPT"
-        chmod +x /etc/toolbox/scripts/app/chatgpt.sh
-        bash /etc/toolbox/scripts/app/chatgpt.sh uninstall
-      fi
+        chmod +x /etc/toolbox/scripts/chatgpt.sh
+        bash /etc/toolbox/scripts/chatgpt.sh
       ;;
     4)
         if [ ! -f "/etc/nginx/sites-enabled/cloudreve" ]; then
