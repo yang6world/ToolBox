@@ -39,6 +39,7 @@
             read -p "" yn
             if [[ $yn == "y" || $yn == "Y" ]]; then
                 cp /etc/toolbox/config.yaml /tmp/config.yaml
+                cp /etc/toolbox/config/chatgpt.yaml /tmp/chatgpt.yaml
                 rm -rf /etc/toolbox
                 rm -rf /usr/local/bin/toolbox
                 mkdir /etc/toolbox
@@ -47,6 +48,7 @@
                 chmod +x /etc/toolbox/tool.sh
                 ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
                 chmod +x /usr/local/bin/toolbox
+                cp /tmp/chatgpt.yaml /etc/toolbox/config/chatgpt.yaml
                 echo -e "\033[32m 更新成功！\033[0m"
                 echo -e "\033[32m 输入\033[0m \033[33mtoolbox\033[0m \033[32m即可运行！\033[0m"
                 exit 1
