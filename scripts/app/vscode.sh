@@ -37,6 +37,7 @@ function vscode_install_vouch(){
 domain_check
 if [ -f "/etc/nginx/vouch" ]; then
     echo -e "\033[32m 安装的vscode将使用vouch认证 \033[0m"
+fi
     docker run -d \
       --name=code-server \
       -e PUID=1000 \
@@ -48,7 +49,7 @@ if [ -f "/etc/nginx/vouch" ]; then
       -v /root/config/vscode:/config \
       --restart unless-stopped \
       ghcr.io/yang6world/docker-code-server:main
-fi
+
 cat > /etc/nginx/sites-enabled/vscode<< EOF
     server {
         server_name $domain;
@@ -153,6 +154,7 @@ function vscode_install(){
 domain_check
 if [ -f "/etc/nginx/vouch" ]; then
     echo -e "\033[32m 安装的vscode将使用vouch认证 \033[0m"
+fi
     docker run -d \
       --name=code-server \
       -e PUID=1000 \
@@ -165,7 +167,6 @@ if [ -f "/etc/nginx/vouch" ]; then
       -v /root/config/vscode:/config \
       --restart unless-stopped \
       ghcr.io/yang6world/docker-code-server:main
-fi
 cat > /etc/nginx/sites-enabled/vscode<< EOF
     server {
         server_name $domain;

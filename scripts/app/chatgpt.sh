@@ -92,13 +92,12 @@ cat > /etc/nginx/sites-enabled/chatgpt<< EOF
 
         # dhparams file
         listen 443 ssl http2;
-    
 
         # intermediate configuration
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
         ssl_prefer_server_ciphers off;
-                # send all requests to the `/validate` endpoint for authorization
+                
         auth_request /validate;
 
         location = /validate {
@@ -121,7 +120,6 @@ cat > /etc/nginx/sites-enabled/chatgpt<< EOF
         auth_request_set \$auth_resp_failcount \$upstream_http_x_vouch_failcount;
         }
 
-        # if validate returns `401 not authorized` then forward the request to the error401block
         error_page 401 = @error401;
 
         location @error401 {
