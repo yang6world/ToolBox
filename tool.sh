@@ -92,9 +92,19 @@ function chack_update(){
 }
 function update_toolbox(){
     echo "正在更新"
-    wget https://toolbox.yserver.top/latest/tool.sh -O /etc/toolbox/tool.sh
-    wget https://toolbox.yserver.top/latest/wordpress.yaml -O /etc/toolbox/stacks/wordpress.yaml
+    cp /etc/toolbox/config.yaml /tmp/config.yaml
+    cp /etc/toolbox/config/chatgpt.yaml /tmp/chatgpt.yaml
+    rm -rf /etc/toolbox
+    rm -rf /usr/local/bin/toolbox
+    mkdir /etc/toolbox
+    wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar
+    tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
     chmod +x /etc/toolbox/tool.sh
+    ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
+    chmod +x /usr/local/bin/toolbox
+    cp /tmp/chatgpt.yaml /etc/toolbox/config/chatgpt.yaml
+    rm -rf /tmp/config.yaml
+    rm -rf /tmp/chatgpt.yaml
     echo "更新完成，请重新运行"
     exit 0
 }
