@@ -5,7 +5,7 @@ ipv4=$(curl -s https://ipv4.icanhazip.com/)
 
 function domain_check(){
     echo -e "\033[32m 检查域名解析是否正确 \033[0m"
-    ipv4s=`dig +short -t A $domain`
+    ipv4s=`dig +short -t A $domain`|| ipv4s=`ping $domain -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     #对比ipv4和ipv4s是否相同否则退出
     if [ "$ipv4" != "$ipv4s" ]; then
         echo -e "\033[31m 域名解析错误 \033[0m"

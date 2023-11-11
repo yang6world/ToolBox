@@ -295,7 +295,7 @@ function advanced_options(){
     6)
         if [ "$vouch" = "true" ]; then
             echo "你选择了选择身份验证器（OIDC）"
-            if [ "$validator" = "null"]
+            if [ "$validator" = "null"]; then
                 echo -e "\033[32m 当前选项下你可用直接在vouch中设置OICD认证服务 \033[0m"
                 echo -e "\033[31m 是否需要切换为使用logto搭建本地认证 \033[0m"
             else
@@ -304,7 +304,7 @@ function advanced_options(){
             fi
             read -p "输入y切换，输入n跳过：" update
             if [ "$update" = "y" ]; then
-                if [ "$validator" = "null"]
+                if [ "$validator" = "null"]; then
                     echo "你选择了使用logto"
                     modify_yaml_key /etc/toolbox/config.yaml validator logto
                     chmod +x /etc/toolbox/scripts/app/logto.sh
