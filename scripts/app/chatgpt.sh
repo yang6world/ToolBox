@@ -268,4 +268,14 @@ case $1 in
             chatgpt_web_install
         fi
     ;;
+    reinstall)
+        docker stop chatgpt-web
+        docker rm chatgpt-web
+        if [ $vouch == "true" ]; then
+            chatgpt_web_install_vouch
+        else
+            chatgpt_web_install
+        fi
+    ;;
+
 esac

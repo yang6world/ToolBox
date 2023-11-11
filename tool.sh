@@ -229,6 +229,8 @@ function advanced_options(){
     if [ "$vouch" = "true" ]; then
         echo -e "\033[32m 6.选择身份验证器（OIDC） \033[0m"
     fi
+    #修改密码 
+    echo -e "\033[32m 7.修改通用密码 \033[0m"
     echo -e "\033[32m 点击任意键返回上一级 \033[0m"
     read choice3
     case "$choice3" in
@@ -285,6 +287,21 @@ function advanced_options(){
             echo "0 * * * * /etc/toolbox/scripts/docker_aprotect.sh" >> /var/spool/cron/crontabs/root
         fi
         ;;
+    7)
+        echo "你选择了修改通用密码"
+        read -p "请输入你的密码新：" password
+        modify_yaml_key /etc/toolbox/config.yaml universal_password $password
+        #对使用通用密码的应用进行重装
+        if [ -f "/etc/nginx/sites-enabled/vscode" ]; then
+            chmod +x /etc/toolbox/scripts/app/vscode.sh
+            bash /etc/toolbox/scripts/app/vscode.sh reinstall
+        fi
+        if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
+            chmod +x /etc/toolbox/scripts/app/chatgpt.sh
+            bash /etc/toolbox/scripts/app/chatgpt.sh reinstall
+        fi
+        ;;
+
     *)
         perview
         ;;

@@ -276,6 +276,17 @@ case $1 in
             nginx_restart
             vscode_install
         fi
+        ;;
+    reinstall)
+        docker stop code-server
+        docker rm code-server
+        if [ $vouch == "true" ]; then
+            vscode_install_vouch
+        else
+            vscode_install
+        fi
+        ;;
+
 
 
 esac
