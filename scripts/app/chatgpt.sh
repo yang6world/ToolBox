@@ -152,12 +152,11 @@ domain_check
 echo -e "\033[32m 安装的chatgpt可使用单点认证 \033[0m"
 read -p "输入你的api——key：" gpt_key
 read -p "输入你的url：" gpt_url
-read -p "设置你的密码：" gpt_password
 docker run --name chatgpt-web -d -p 3002:3002 \
   --env OPENAI_API_KEY=$gpt_key \
   --env OPENAI_API_BASE_URL=$gpt_url \
   --env MAX_REQUESTS_PER_HOUR=0 \
-  --env AUTH_SECRET_KEY=$gpt_password \
+  --env AUTH_SECRET_KEY=$universal_password \
   --env OPENAI_API_MODEL=gpt-3.5-turbo-16k \
   chenzhaoyu94/chatgpt-web
 echo -e "\033[32m 安装完成默认使用GPT3.5 \033[0m"
