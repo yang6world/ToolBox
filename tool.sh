@@ -131,6 +131,7 @@ function first_start(){
     fi
     #安装docker-compose
     if [ ! -x "$(command -v docker-compose)" ]; then
+
         sudo curl -L "https://github.com/docker/compose/releases/download/v2.2.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
         sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -399,7 +400,7 @@ EOF
             ;;
         3)
             echo -e "\033[32m 重启nginx \033[0m"
-            nginx_restart
+            sysrtemctl restart nginx
             ;;
         *)
             perview
