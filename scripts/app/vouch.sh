@@ -90,13 +90,13 @@ case $1 in
         vouch_install
         #判断是否安装了chatgpt
         if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
-            chmod +x /etc/toolbox/scripts/app/chatgpt.sh vouch
-            bash /etc/toolbox/scripts/app/chatgpt.sh
+            chmod +x /etc/toolbox/scripts/app/chatgpt.sh 
+            bash /etc/toolbox/scripts/app/chatgpt.sh vouch
         fi 
         #判断是否安装了vscode
         if [ -f "/etc/nginx/sites-enabled/vscode" ]; then
-            chmod +x /etc/toolbox/scripts/app/vscode.sh vouch
-            bash /etc/toolbox/scripts/app/vscode.sh
+            chmod +x /etc/toolbox/scripts/app/vscode.sh 
+            bash /etc/toolbox/scripts/app/vscode.sh vouch
         fi
     ;;
     uninstall)
@@ -110,13 +110,13 @@ case $1 in
         rm -rf /etc/nginx/sites-enabled/vouch
         nginx_restart
         if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
-            chmod +x /etc/toolbox/scripts/app/chatgpt.sh vouch
-            bash /etc/toolbox/scripts/app/chatgpt.sh
+            chmod +x /etc/toolbox/scripts/app/chatgpt.sh 
+            bash /etc/toolbox/scripts/app/chatgpt.sh vouch
         fi 
         #判断是否安装了vscode
         if [ -f "/etc/nginx/sites-enabled/vscode" ]; then
-            chmod +x /etc/toolbox/scripts/app/vscode.sh vouch
-            bash /etc/toolbox/scripts/app/vscode.sh
+            chmod +x /etc/toolbox/scripts/app/vscode.sh
+            bash /etc/toolbox/scripts/app/vscode.sh vouch
         fi
     ;;
 esac
