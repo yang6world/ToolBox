@@ -116,6 +116,7 @@ function countdown() {
 #初始化
 function first_start(){
     read -p "请输入你的域名（如xxx.yserver.top）：" domain
+    read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
     echo -e "\033[32m 正在进行一些准备工作\033[0m"
     apt-get update > /dev/null
     apt-get install -y curl wget nginx sudo jq > /dev/null
@@ -178,6 +179,7 @@ docker_api: true
 docker_aprotect: false
 docker_v: $docker_v
 validator: null
+universal_password: $password
 EOF
         cp -r ./* /etc/toolbox/
         ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
