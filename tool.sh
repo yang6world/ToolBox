@@ -40,6 +40,7 @@ if [ -f "/etc/toolbox/config.yaml" ]; then
     versions=$(cat /etc/toolbox/config.yaml | grep version | awk '{print $2}')
     vouch=$(cat /etc/toolbox/config.yaml | grep vouch | awk '{print $2}')
     docker_aprotect=$(cat /etc/toolbox/config.yaml | grep docker_aprotect | awk '{print $2}')
+    docker_auto_update=$(cat /etc/toolbox/config.yaml | grep docker_auto_update | awk '{print $2}')
     #对比配置文件版本号
     if [ "$version" != "$versions" ]; then
         modify_yaml_key /etc/toolbox/config.yaml version $version
@@ -126,6 +127,7 @@ function default_config(){
     docker_api=true
     validator=null
     docker_aprotect=false
+    docker_auto_update=false
     read -p "请输入你的域名（如xxx.yserver.top）：" domain
     read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
 }
@@ -162,7 +164,12 @@ function first_start(){
             password=$(cat /tmp/config.yaml | grep universal_password | awk '{print $2}')
         else
             read -p "请输入你的密码(在未开启vouch前你的部分应用将使用该密码)：" password
-        fi       
+        fi 
+        if [ -n "$(cat /tmp/config.yaml | grep docker_auto_update)" ]; then
+            docker_auto_update=$(cat /tmp/config.yaml | grep docker_auto_update | awk '{print $2}')
+        else
+            docker_auto_update=false
+        fi    
     else
         default_config
         if [ -n "$(lsof -i:80)" ]; then
@@ -233,6 +240,7 @@ docker_aprotect: $docker_aprotect
 docker_v: $docker_v
 validator: $validator
 universal_password: $password
+docker_auto_update: $docker_auto_update
 EOF
         cp -r ./* /etc/toolbox/
         ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
@@ -483,7 +491,8 @@ function perview(){
         echo -e "\033[32m 3.重启nginx \033[0m"
         echo -e "\033[32m 4.展示服务器进程 \033[0m"  
         echo -e "\033[32m 5.展示docker进程信息 \033[0m"
-        echo -e "\033[32m 6.修改当前用户ssh登陆密码 \033[0m"      
+        echo -e "\033[32m 6.修改当前用户ssh登陆密码 \033[0m"
+        echo -e "\033[32m 7.自动更新docker容器 \033[0m"      
         echo -e "\033[32m 点击任意键返回上一级 \033[0m"
         read choice2
         case "$choice2" in
@@ -516,6 +525,19 @@ function perview(){
             passwd
             clear
             perview
+            ;;
+        7)
+            if [ "$docker_auto_update" = "true" ]; then
+                echo -e "\033[32m 你选择了关闭自动更新docker容器 \033[0m"
+                modify_yaml_key /etc/toolbox/config.yaml docker_auto_update false
+                chmod +x /etc/toolbox/scripts/docker_auto_update.sh
+                bash /etc/toolbox/scripts/docker_auto_update.sh uninstall
+            else
+                echo -e "\033[32m 你选择了开启自动更新docker容器 \033[0m"
+                modify_yaml_key /etc/toolbox/config.yaml docker_auto_update true
+                chmod +x /etc/toolbox/scripts/docker_auto_update.sh
+                bash /etc/toolbox/scripts/docker_auto_update.sh install
+            fi
             ;;
         *)
             perview
