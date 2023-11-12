@@ -24,7 +24,7 @@
         read -p "检测到您没有安装551工具箱，是否安装？（y/n）" yn
         if [[ $yn == "y" || $yn == "Y" ]]; then
             mkdir /etc/toolbox
-            wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar.gz
+            wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar
             tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
             ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
             chmod +x /etc/toolbox/tool.sh
