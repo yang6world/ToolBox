@@ -292,6 +292,8 @@ function advanced_options(){
     fi
     #修改密码 
     echo -e "\033[32m 7.修改通用密码 \033[0m"
+    #添加swap空间
+    echo -e "\033[32m 8.添加swap空间 \033[0m"
     echo -e "\033[32m 点击任意键返回上一级 \033[0m"
     read choice3
     case "$choice3" in
@@ -390,6 +392,15 @@ function advanced_options(){
         fi
         ;;
 
+    8)
+        echo "你选择了添加swap空间"
+        read -p "请输入你的swap大小（单位MB）：" swap
+        dd if=/dev/zero of=/swapfile bs=1M count=$swap
+        mkswap /swapfile
+        swapon /swapfile
+        echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+        echo "添加swap空间成功"
+        ;;
     *)
         perview
         ;;
