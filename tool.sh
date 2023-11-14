@@ -104,8 +104,6 @@ function update_toolbox(){
     ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
     chmod +x /usr/local/bin/toolbox
     cp /tmp/chatgpt.yaml /etc/toolbox/config/chatgpt.yaml
-    rm -rf /tmp/config.yaml
-    rm -rf /tmp/chatgpt.yaml
     echo "更新完成，请重新运行"
     exit 0
 }
