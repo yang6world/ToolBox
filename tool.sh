@@ -1,5 +1,5 @@
 #!/bin/bash
-version="1.2.0"
+version="1.2.1"
 run_time=$(cat /proc/uptime| awk -F. '{run_days=$1 / 86400;run_hour=($1 % 86400)/3600;run_minute=($1 % 3600)/60;run_second=$1 % 60;printf("%d天%d时%d分%d秒",run_days,run_hour,run_minute,run_second)}')
 #修改配置
 modify_yaml_key() {
@@ -294,6 +294,7 @@ function advanced_options(){
     echo -e "\033[32m 7.修改通用密码 \033[0m"
     #添加swap空间
     echo -e "\033[32m 8.添加swap空间 \033[0m"
+    echo -e "\033[32m 9.清理doceker缓存 \033[0m"
     echo -e "\033[32m 点击任意键返回上一级 \033[0m"
     read choice3
     case "$choice3" in
@@ -400,6 +401,35 @@ function advanced_options(){
         swapon /swapfile
         echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
         echo "添加swap空间成功"
+        ;;
+    9)
+        graph_screen
+        read -p "请选择（y/n）" yna
+        echo -e "\033[31m 1.清理磁盘，删除关闭的容器、无用的数据卷和网络，无tag的镜像 \033[0m"
+        echo -e "\033[31m 2.将没有容器使用Docker镜像都删掉 \033[0m"
+        echo -e "\033[31m 3.删除所有关闭的容器 \033[0m"
+        echo -e "\033[31m 4.删除所有未打 dangling 标签的镜像 \033[0m"
+        echo -e "\033[31m 5.删除所有dangling数据卷 \033[0m"
+        if [ "$yna" = "1" ]; then
+            docker system prune
+            echo "清理完成"
+        fi
+        if [ "$yna" = "2" ]; then
+           docker system prune -a
+            echo "清理完成"
+        fi
+        if [ "$yna" = "3" ]; then
+            docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
+            echo "清理完成"
+        fi
+        if [ "$yna" = "4" ]; then
+           docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+            echo "清理完成"
+        fi
+        if [ "$yna" = "5" ]; then
+            docker volume rm $(docker volume ls -qf dangling=true)
+            echo "清理完成"
+        fi
         ;;
     *)
         perview
