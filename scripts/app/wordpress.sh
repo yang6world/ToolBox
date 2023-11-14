@@ -140,6 +140,7 @@ case $1 in
             docker-compose -f /etc/toolbox/stacks/wordpress.yaml down
             rm -rf /root/config/wordpress
             rm -rf /etc/nginx/sites-enabled/wordpress
+            rm -rf /root/config/mysql
             nginx_restart
         else
             echo "卸载已取消"
