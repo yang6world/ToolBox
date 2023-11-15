@@ -35,23 +35,23 @@ function run_time(){
 echo -----------------------------------------------------
 #wordpress
 echo -e "\033[32m 应用\033[0m       \033[32m 目录：\033[0m               \033[32m cpu占用\033[0m  \033[32m 内存占用\033[0m \033[32m     占用磁盘\033[0m    "
-if [ ! -f "/etc/nginx/sites-enabled/wordpress" ]; then
+if [ -f "/etc/nginx/sites-enabled/wordpress" ]; then
     echo -e "\033[32m wordpress\033[0m  /root/config/wordpress  \033[32m$(get_cpu_usage "wordpress")\033[0m  \033[32m$(get_memory_usage "wordpress")\033[0m  \033[32m$(du -sh /root/config/wordpress | awk '{print $1}')\033[0m"
 fi
 #mysql
-if [ ! -f "/etc/nginx/sites-enabled/mysql" ]; then
+if [ -f "/etc/nginx/sites-enabled/mysql" ]; then
     echo -e "\033[32m mysql\033[0m      /root/config/mysql      \033[32m$(get_cpu_usage "db")\033[0m      \033[32m$(get_memory_usage "db")\033[0m       \033[32m$(du -sh /root/config/mysql | awk '{print $1}')\033[0m"
 fi
 #cloudreve
-if [ ! -f "/etc/nginx/sites-enabled/cloudreve" ]; then
+if [ -f "/etc/nginx/sites-enabled/cloudreve" ]; then
     echo -e "\033[32m cloudreve\033[0m  /root/config/cloudreve  \033[32m$(get_cpu_usage "cloudreve")\033[0m  \033[32m$(get_memory_usage "cloudreve")\033[0m  \033[32m$(du -sh /root/config/cloudreve | awk '{print $1}')\033[0m"
 fi
 #chatgpt
-if [ ! -f "/etc/nginx/sites-enabled/chatgpt" ]; then
+if [ -f "/etc/nginx/sites-enabled/chatgpt" ]; then
     echo -e "\033[32m chatgpt\033[0m    /root/config/chatgpt    \033[32m$(get_cpu_usage "chatgpt")\033[0m    \033[32m$(get_memory_usage "chatgpt")\033[0m    \033[32m$(du -sh /root/config/chatgpt | awk '{print $1}')\033[0m"
 fi
 #aria2
-if [ ! -f "/etc/nginx/sites-enabled/aria2" ]; then
+if [ -f "/etc/nginx/sites-enabled/aria2" ]; then
     echo -e "\033[32m aria2\033[0m      /root/config/aria2      \033[32m$(get_cpu_usage "aria2")\033[0m      \033[32m$(get_memory_usage "aria2")\033[0m       \033[32m$(du -sh /root/config/aria2 | awk '{print $1}')\033[0m"
 fi
 echo -----------------------------------------------------
