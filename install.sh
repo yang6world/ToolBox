@@ -26,6 +26,11 @@
             mkdir /etc/toolbox
             wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar
             tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
+            #若下载失败则退出
+            if [ ! -f "/etc/toolbox/tool.sh" ]; then
+                echo -e "\033[31m 安装失败！\033[0m"
+                exit 1
+            fi
             ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
             chmod +x /etc/toolbox/tool.sh
             chmod +x /usr/local/bin/toolbox
@@ -35,7 +40,7 @@
         fi
     else 
         if [ "$version_new" != "$version" ] ; then
-            echo -e "\033[32m 检测到新版本，是否执行覆盖更新？（y/n）\033[0m"
+            echo -e "\033[32m 检测到新版本$version_new，是否执行覆盖更新？（y/n）\033[0m"
             read -p "" yn
             if [[ $yn == "y" || $yn == "Y" ]]; then
                 cp /etc/toolbox/config.yaml /tmp/config.yaml
@@ -45,6 +50,11 @@
                 mkdir /etc/toolbox
                 wget https://toolbox.yserver.top/latest/toolbox.tar -O /tmp/toolbox.tar
                 tar -xvf /tmp/toolbox.tar -C /etc/toolbox || tar -xvf --no-same-owner /tmp/toolbox.tar -C /etc/toolbox
+                #若下载失败则退出
+                if [ ! -f "/etc/toolbox/tool.sh" ]; then
+                    echo -e "\033[31m 更新失败！\033[0m"
+                    exit 1
+                fi
                 chmod +x /etc/toolbox/tool.sh
                 ln -s /etc/toolbox/tool.sh /usr/local/bin/toolbox
                 chmod +x /usr/local/bin/toolbox
