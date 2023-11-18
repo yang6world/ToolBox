@@ -266,37 +266,64 @@ EOF
     exit 1
 
 }
-function advanced_options(){
+#docker设置
+function docker_config(){
     graph_screen
-    if [ "$docker_api" = "true" ]; then
-        echo -e "\033[31m 1.关闭docker_api \033[0m"
-    else
-        echo -e "\033[32m 1.开启docker_api \033[0m"
-    fi
-    if [ "$vouch" = "true" ]; then
-        echo -e "\033[31m 2.关闭vouch \033[0m"
-    else
-        echo -e "\033[32m 2.开启vouch \033[0m"
-    fi
-    echo -e "\033[32m 3.重新生成TLS证书 \033[0m"
-    echo -e "\033[32m 4.修改域名 \033[0m"
+    read -p "请选择（y/n）" yna
+    echo -e "\033[31m 1.清理磁盘，删除关闭的容器、无用的数据卷和网络，无tag的镜像 \033[0m"
+    echo -e "\033[31m 2.将没有容器使用Docker镜像都删掉 \033[0m"
+    echo -e "\033[31m 3.删除所有关闭的容器 \033[0m"
+    echo -e "\033[31m 4.删除所有未打 dangling 标签的镜像 \033[0m"
+    echo -e "\033[31m 5.删除所有dangling数据卷 \033[0m"
     if [ "$docker_aprotect" = "true" ]; then
-        echo -e "\033[31m 5.关闭docker_api守护 \033[0m"
+        echo -e "\033[31m 6.关闭docker_api守护 \033[0m"
     else
-        echo -e "\033[32m 5.开启docker_api守护 \033[0m"
+        echo -e "\033[32m 6.开启docker_api守护 \033[0m"
     fi
-    if [ "$vouch" = "true" ]; then
-        echo -e "\033[32m 6.选择身份验证器（OIDC） \033[0m"
+    echo -e "\033[32m 7.重新生成TLS证书 \033[0m"
+    if [ "$docker_api" = "true" ]; then
+        echo -e "\033[31m 8.关闭docker_api \033[0m"
+    else
+        echo -e "\033[32m 8.开启docker_api \033[0m"
     fi
-    #修改密码 
-    echo -e "\033[32m 7.修改通用密码 \033[0m"
-    #添加swap空间
-    echo -e "\033[32m 8.添加swap空间 \033[0m"
-    echo -e "\033[32m 9.清理doceker缓存 \033[0m"
-    echo -e "\033[32m 点击任意键返回上一级 \033[0m"
-    read choice3
-    case "$choice3" in
-    1)
+    if [ "$yna" = "1" ]; then
+        docker system prune
+        echo "清理完成"
+    fi
+    if [ "$yna" = "2" ]; then
+       docker system prune -a
+        echo "清理完成"
+    fi
+    if [ "$yna" = "3" ]; then
+        docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
+        echo "清理完成"
+    fi
+    if [ "$yna" = "4" ]; then
+       docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+        echo "清理完成"
+    fi
+    if [ "$yna" = "5" ]; then
+        docker volume rm $(docker volume ls -qf dangling=true)
+        echo "清理完成"
+    fi
+    if [ "$yna" = "6" ]; then
+        if [ "$docker_aprotect" = "true" ]; then
+            echo "你选择了关闭docker_api守护"
+            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect false
+            sed -i '/docker_aprotect.sh/d' /var/spool/cron/crontabs/root
+        else
+            echo "你选择了开启docker_api守护"
+            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect true
+            #每小时执行一次docker_aprotect.sh
+            echo "0 * * * * /etc/toolbox/scripts/docker_aprotect.sh" >> /var/spool/cron/crontabs/root
+        fi
+    fi
+    if [ "$yna" = "7" ]; then
+        echo "你选择了重新生成TLS证书"
+        chmod +x /etc/toolbox/scripts/tls.sh
+        bash /etc/toolbox/scripts/tls.sh
+    fi
+    if [ "$yna" = "8" ]; then
         if [ "$docker_api" = "true" ]; then
             echo "你选择了关闭docker_api"
             modify_yaml_key /etc/toolbox/config.yaml docker_api false
@@ -314,8 +341,32 @@ function advanced_options(){
             sudo systemctl daemon-reload
             sudo systemctl restart docker.service
         fi
-        ;;
-    2)
+    fi
+    
+
+}
+#高级选项
+function advanced_options(){
+    graph_screen
+    if [ "$vouch" = "true" ]; then
+        echo -e "\033[31m 1.关闭vouch \033[0m"
+    else
+        echo -e "\033[32m 1.开启vouch \033[0m"
+    fi
+
+    echo -e "\033[32m 2.修改域名 \033[0m"
+    if [ "$vouch" = "true" ]; then
+        echo -e "\033[32m 3.选择身份验证器（OIDC） \033[0m"
+    fi
+    #修改密码 
+    echo -e "\033[32m 4.修改通用密码 \033[0m"
+    #添加swap空间
+    echo -e "\033[32m 5.添加swap空间 \033[0m"
+    echo -e "\033[32m 6.Docker设置 \033[0m"
+    echo -e "\033[32m 点击任意键返回上一级 \033[0m"
+    read choice3
+    case "$choice3" in
+    1)
         if [ "$vouch" = "true" ]; then
             echo "你选择了关闭vouch"
             modify_yaml_key /etc/toolbox/config.yaml vouch false
@@ -328,29 +379,12 @@ function advanced_options(){
             bash /etc/toolbox/scripts/app/vouch.sh install
         fi
         ;;
-    3)
-        echo "你选择了重新生成TLS证书"
-        chmod +x /etc/toolbox/scripts/tls.sh
-        bash /etc/toolbox/scripts/tls.sh
-        ;;
-    4)
+    2)
         echo "你选择了修改域名"
         read -p "请输入你的域名（如xxx.yserver.top）：" domain
         modify_yaml_key /etc/toolbox/config.yaml domain $domain
         ;;
-    5)
-        if [ "$docker_aprotect" = "true" ]; then
-            echo "你选择了关闭docker_api守护"
-            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect false
-            sed -i '/docker_aprotect.sh/d' /var/spool/cron/crontabs/root
-        else
-            echo "你选择了开启docker_api守护"
-            modify_yaml_key /etc/toolbox/config.yaml docker_aprotect true
-            #每小时执行一次docker_aprotect.sh
-            echo "0 * * * * /etc/toolbox/scripts/docker_aprotect.sh" >> /var/spool/cron/crontabs/root
-        fi
-        ;;
-    6)
+    3)
         if [ "$vouch" = "true" ]; then
             echo "你选择了选择身份验证器（OIDC）"
             if [ "$validator" = "null"]; then
@@ -376,7 +410,7 @@ function advanced_options(){
             fi
         fi
         ;;
-    7)
+    4)
         echo "你选择了修改通用密码"
         read -p "请输入你的密码新：" password
         modify_yaml_key /etc/toolbox/config.yaml universal_password $password
@@ -391,7 +425,7 @@ function advanced_options(){
         fi
         ;;
 
-    8)
+    5)
         echo "你选择了添加swap空间"
         read -p "请输入你的swap大小（单位MB）：" swap
         dd if=/dev/zero of=/swapfile bs=1M count=$swap
@@ -400,35 +434,11 @@ function advanced_options(){
         echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
         echo "添加swap空间成功"
         ;;
-    9)
-        graph_screen
-        read -p "请选择（y/n）" yna
-        echo -e "\033[31m 1.清理磁盘，删除关闭的容器、无用的数据卷和网络，无tag的镜像 \033[0m"
-        echo -e "\033[31m 2.将没有容器使用Docker镜像都删掉 \033[0m"
-        echo -e "\033[31m 3.删除所有关闭的容器 \033[0m"
-        echo -e "\033[31m 4.删除所有未打 dangling 标签的镜像 \033[0m"
-        echo -e "\033[31m 5.删除所有dangling数据卷 \033[0m"
-        if [ "$yna" = "1" ]; then
-            docker system prune
-            echo "清理完成"
-        fi
-        if [ "$yna" = "2" ]; then
-           docker system prune -a
-            echo "清理完成"
-        fi
-        if [ "$yna" = "3" ]; then
-            docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs docker rm
-            echo "清理完成"
-        fi
-        if [ "$yna" = "4" ]; then
-           docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
-            echo "清理完成"
-        fi
-        if [ "$yna" = "5" ]; then
-            docker volume rm $(docker volume ls -qf dangling=true)
-            echo "清理完成"
-        fi
+    6)
+        echo "你选择了Docker设置"
+        docker_config
         ;;
+
     *)
         perview
         ;;
