@@ -506,6 +506,17 @@ function install_app(){
             bash /etc/toolbox/scripts/app/cloudreve.sh uninstall
         fi
         ;;
+    5)
+        if [ ! -f "/etc/nginx/sites-enabled/rocket_chat"] then
+            echo "你选择了安装rocket_chat"
+            chmod +x /etc/toolbox/scripts/app/rocket_chat.sh
+            bash /etc/toolbox/scripts/app/rocket_chat.sh install
+        else
+            echo "你选择了卸载rocket_chat"
+            chmod +x /etc/toolbox/scripts/app/rocket_chat.sh
+            bash /etc/toolbox/scripts/app/rocket_chat.sh uninstall
+        fi
+        ;;
     *)
       perview
       ;;
