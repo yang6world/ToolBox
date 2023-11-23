@@ -29,3 +29,8 @@ function nginx_restart(){
     echo -e "\033[32m 重启nginx \033[0m"
     service nginx restart
 }
+
+function netease_music_install(){
+    echo -e "\033[32m 开始安装网易云音乐解锁 \033[0m"
+    docker run -e JSON_LOG=true -p 8081:8080-e LOG_LEVEL=debug pan93412/unblock-netease-music-enhanced
+}
