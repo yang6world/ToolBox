@@ -34,3 +34,24 @@ function netease_music_install(){
     echo -e "\033[32m 开始安装网易云音乐解锁 \033[0m"
     docker run -e JSON_LOG=true -p 8081:8080-e LOG_LEVEL=debug pan93412/unblock-netease-music-enhanced
 }
+
+#$1为install则执行安装uninstall则执行卸载
+case $1 in
+    install)
+        #提醒解析域名的名称
+        echo -e "\033[32m 请将$domain 解析到你的服务器 \033[0m"
+        #用户确认
+        read -p "域名解析完成后请按回车键继续"  
+        netease_music_install
+        ;;
+    uninstall)
+        #对选项进行二次确认
+        read -p "确定要卸载unblock-netease-music？这将删除你的所有配置文件[y/n]" answer
+        if [ $answer == "y" ]; then
+            echo "开始卸载"
+            docker rm -f unblock-netease-music-enhanced
+        else
+            echo "卸载已取消"
+        fi
+        ;;
+esac
