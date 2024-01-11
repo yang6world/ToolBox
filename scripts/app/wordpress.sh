@@ -86,6 +86,14 @@ cat > /etc/nginx/sites-enabled/wordpress<< EOF
         ssl_session_timeout  10m;
         ssl_prefer_server_ciphers on;
         client_max_body_size 300M;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+        
         
 
         location / {
