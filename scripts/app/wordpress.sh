@@ -92,7 +92,12 @@ cat > /etc/nginx/sites-enabled/wordpress<< EOF
         gzip_proxied any;
         gzip_comp_level 6;
         gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-
+        # 静态资源的缓存策略
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+            proxy_pass http://localhost:8080;
+            expires 7d;
+            add_header Cache-Control "public";
+        }
         
         
 
